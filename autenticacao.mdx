@@ -59,7 +59,7 @@ Ao receber `401`, descarte o token atual, autentique novamente e repita a opera√
 
 ```bash
 curl --request POST \
-  --url https://hom.portalgsf.com.br/api-boss/api-token-auth/ \
+  --url https://hom.portalgsf.com.br/api/v1/auth/token/ \
   --header 'Content-Type: application/json' \
   --data '{
     "username": "<usuario_integracao>",
@@ -71,7 +71,7 @@ curl --request POST \
 import requests
 
 r = requests.post(
-    "https://hom.portalgsf.com.br/api-boss/api-token-auth/",
+    "https://hom.portalgsf.com.br/api/v1/auth/token/",
     json={"username": "<usuario_integracao>", "password": "<senha>"},
     timeout=30,
 )
@@ -81,7 +81,7 @@ headers = {"Authorization": f"JWT {r.json()['token']}"}
 
 ```javascript
 const res = await fetch(
-  "https://hom.portalgsf.com.br/api-boss/api-token-auth/",
+  "https://hom.portalgsf.com.br/api/v1/auth/token/",
   {
     method: "POST",
     headers: { "Content-Type": "application/json" },

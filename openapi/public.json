@@ -3,11 +3,11 @@
   "info": {
     "title": "GSF Soluções API",
     "version": "1.0.0",
-    "description": "Playground de homologação.\n\nContrato público documentado nas páginas: `/api/v1/auth/token/`, `/api/v1/nfse/`, `/api/v1/nfse/consulta/`, `/api/v1/nfe/`, `/api/v1/nfe/consulta/`, `/api/v1/nfe/sefaz/`."
+    "description": "Especificações técnicas da API GSF Soluções.\n\nBase: `https://hom.portalgsf.com.br` · Prefixo: `/api/v1/`"
   },
   "servers": [
     {
-      "url": "https://hom.portalgsf.com.br/api-boss",
+      "url": "https://hom.portalgsf.com.br",
       "description": "Homologação GSF"
     }
   ],
@@ -30,13 +30,13 @@
     }
   ],
   "paths": {
-    "/api-token-auth/": {
+    "/api/v1/auth/token/": {
       "post": {
         "tags": [
           "Autenticacao"
         ],
-        "summary": "POST /api/v1/auth/token/",
-        "description": "Contrato público: `POST /api/v1/auth/token/`.\n\nRetorna JWT. Header: `Authorization: JWT <token>` (não Bearer).",
+        "summary": "Obter token JWT",
+        "description": "Retorna JWT. Header: `Authorization: JWT <token>` (não Bearer).",
         "operationId": "obterToken",
         "security": [],
         "requestBody": {
@@ -73,13 +73,13 @@
         }
       }
     },
-    "/estapar/": {
+    "/api/v1/nfse/": {
       "post": {
         "tags": [
           "NFSe"
         ],
-        "summary": "POST /api/v1/nfse/",
-        "description": "Contrato público: `POST /api/v1/nfse/`.\n\nBody: **array JSON**. Resposta: `nroProtocolo`.",
+        "summary": "NFS-e — Enviar lote",
+        "description": "Body: **array JSON**. Resposta: `nroProtocolo`.",
         "operationId": "enviarLoteNfse",
         "requestBody": {
           "required": true,
@@ -204,13 +204,66 @@
         }
       }
     },
-    "/send_json/": {
+    "/api/v1/nfse/consulta/": {
+      "post": {
+        "tags": [
+          "NFSe"
+        ],
+        "summary": "NFS-e — Consultar retorno",
+        "description": "Body: `cnpj` + `cod_origem` (= `idNfErp` / código de origem).",
+        "operationId": "consultarRetornoNfse",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsultaRequest"
+              },
+              "example": {
+                "cnpj": "22760852000110",
+                "cod_origem": "GSF|1001"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Retorno disponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "CNPJ": "22760852000110",
+                  "COD_ORIGEM": "GSF|1001",
+                  "STATUS": "100",
+                  "NUMERO": "123",
+                  "MENSAGEM": "Autorizado"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Ainda processando"
+          },
+          "401": {
+            "description": "Token inválido"
+          },
+          "412": {
+            "description": "Parâmetro obrigatório nulo"
+          }
+        }
+      }
+    },
+    "/api/v1/nfe/": {
       "post": {
         "tags": [
           "NFe"
         ],
-        "summary": "POST /api/v1/nfe/",
-        "description": "Contrato público: `POST /api/v1/nfe/`.\n\nBody: `{ \"Lote\": [ ... ] }` (1–200). Correlacione com `codigoOrigem`.",
+        "summary": "NF-e — Enviar lote JSON",
+        "description": "Body: `{ \"Lote\": [ ... ] }` (1–200). Correlacione com `codigoOrigem`.",
         "operationId": "enviarLoteNfe",
         "requestBody": {
           "required": true,
@@ -419,15 +472,14 @@
         }
       }
     },
-    "/invoiceReturnWxml/": {
+    "/api/v1/nfe/consulta/": {
       "post": {
         "tags": [
-          "NFSe",
           "NFe"
         ],
-        "summary": "POST /api/v1/{nfse|nfe}/consulta/",
-        "description": "Contrato público: `POST /api/v1/nfse/consulta/` ou `POST /api/v1/nfe/consulta/`.\n\nBody: `cnpj` + `cod_origem` (`idNfErp` na NFS-e / `codigoOrigem` na NF-e).",
-        "operationId": "consultarRetorno",
+        "summary": "NF-e — Consultar retorno",
+        "description": "Body: `cnpj` + `cod_origem` (= `codigoOrigem` do envio).",
+        "operationId": "consultarRetornoNfe",
         "requestBody": {
           "required": true,
           "content": {
@@ -473,13 +525,13 @@
         }
       }
     },
-    "/send_xml/": {
+    "/api/v1/nfe/sefaz/": {
       "post": {
         "tags": [
           "SEFAZ"
         ],
-        "summary": "POST /api/v1/nfe/sefaz/",
-        "description": "Contrato público: `POST /api/v1/nfe/sefaz/`.\n\n`multipart/form-data`: `xml` + `cnpj`.",
+        "summary": "SEFAZ — Enviar XML",
+        "description": "`multipart/form-data`: `xml` + `cnpj`.",
         "operationId": "enviarXmlSefaz",
         "requestBody": {
           "required": true,

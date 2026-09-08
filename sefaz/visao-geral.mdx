@@ -28,7 +28,7 @@ Envie o XML como **arquivo**, não como texto JSON nem Base64.
 
 ```bash
 curl --request POST \
-  --url https://hom.portalgsf.com.br/api-boss/send_xml/ \
+  --url https://hom.portalgsf.com.br/api/v1/nfe/sefaz/ \
   --header 'Authorization: JWT <token>' \
   --form 'cnpj=22760852000110' \
   --form 'xml=@./documento.xml;type=application/xml'
