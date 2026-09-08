@@ -1,0 +1,189 @@
+---
+title: "NF-e — exemplo de lote"
+description: "Payload JSON Lote com dados da GSF Soluções."
+---
+
+Exemplo para `POST /api/v1/nfe/` (`Lote` JSON), com emitente e destinatário **GSF Soluções** (`22760852000110`).
+
+<Warning>
+Valores de homologação — sem efeito fiscal.
+</Warning>
+
+```json
+{
+  "Lote": [
+    {
+      "capa": {
+        "codOp": "T",
+        "dhEmi": "08/09/2026",
+        "docReferenciado": {},
+        "enderLocPrest": {},
+        "infEspecie": [],
+        "infGTVe": [],
+        "issRetido": "N",
+        "item": [
+          {
+            "CFOP": "5933",
+            "cTribMun": "001",
+            "calculaIBSCBS": true,
+            "cserv": "0105",
+            "imposto": {
+              "COFINS": {
+                "vAliq": 3,
+                "vBase": 1000.0,
+                "vValor": 30.0,
+                "CST": ""
+              },
+              "COFINS_RET": {
+                "vAliq": 0,
+                "vBase": 0,
+                "vValor": 0,
+                "CST": ""
+              },
+              "CSLL": {
+                "vAliq": 0,
+                "vBase": 0,
+                "vValor": 0
+              },
+              "FCP": {},
+              "FUNTTEL": {},
+              "FUST": {},
+              "ICMS": {},
+              "INSS": {
+                "vAliq": 0,
+                "vBase": 0,
+                "vValor": 0
+              },
+              "IPI": {},
+              "IRRF": {
+                "vAliq": 0,
+                "vBase": 0,
+                "vValor": 0
+              },
+              "ISS": {
+                "vAliq": 5,
+                "vBase": 1000.0,
+                "vValor": 50.0
+              },
+              "ISS_RET": {},
+              "PIS": {
+                "vAliq": 0.65,
+                "vBase": 1000.0,
+                "vValor": 6.5,
+                "CST": ""
+              },
+              "PIS_RET": {
+                "vAliq": 0,
+                "vBase": 0,
+                "vValor": 0,
+                "CST": ""
+              },
+              "vOutrasRetencoes": 0
+            },
+            "indProdServ": "S",
+            "prodServ": {
+              "cserv": "010501",
+              "itemLC116": "0105",
+              "xserv": "LICENCIAMENTO OU CESSAO DE DIREITO DE USO DE PROGRAMAS DE COMPUTACAO"
+            },
+            "qtd": 1,
+            "vlTot": 1000.0,
+            "vlUni": 1000.0,
+            "xserv": "SERVICOS DE TECNOLOGIA DA INFORMACAO - GSF SOLUCOES"
+          }
+        ],
+        "munIssDevido": 3550308,
+        "municPrest": 3550308,
+        "nNF": 1001,
+        "natOp": "PRESTACAO DE SERVICOS DE TI",
+        "serie": "1",
+        "tpNF": "NFE",
+        "tpOperacao": 1,
+        "vDescCondicionado": 0,
+        "vDescIncondicionado": 0,
+        "vFat": 1000.0,
+        "vLiquido": 1000.0,
+        "vNF": 1000.0,
+        "vServ": 1000.0
+      },
+      "codigoOrigem": "GSF|1001",
+      "destinatario": {
+        "CNPJ": "22760852000110",
+        "IE": "",
+        "xNome": "GSF SOLUCOES LTDA",
+        "cnae": "6201501",
+        "email": "integracao@gsfsolucoes.com.br",
+        "regEspcTrib": "",
+        "xFant": "GSF SOLUCOES",
+        "IM": "",
+        "enderDest": {
+          "CEP": "01310100",
+          "UF": "SP",
+          "nro": "1000",
+          "tpLgr": "AV",
+          "xBairro": "BELA VISTA",
+          "xCpl": "",
+          "xLgr": "PAULISTA",
+          "xMun": "3550308",
+          "fone": "1130000000",
+          "xPais": "1058"
+        },
+        "indIEDest": ""
+      },
+      "emitente": {
+        "CNPJ": "22760852000110",
+        "IE": "ISENTO",
+        "xNome": "GSF SOLUCOES LTDA",
+        "cnae": "6201501",
+        "email": "fiscal@gsfsolucoes.com.br",
+        "regEspcTrib": "",
+        "xFant": "GSF SOLUCOES",
+        "IM": "12345678",
+        "enderEmit": {
+          "CEP": "01310100",
+          "UF": "SP",
+          "nro": "1000",
+          "xBairro": "BELA VISTA",
+          "xCpl": "CJ 101",
+          "xLgr": "AV PAULISTA",
+          "xMun": "3550308",
+          "fone": "1130000000",
+          "xPais": "1058"
+        }
+      },
+      "fatura": {},
+      "gtv": {
+        "infGTV": []
+      },
+      "infAdic": {
+        "infCpl": ""
+      },
+      "intermediario": {
+        "enderInter": {}
+      },
+      "transportadora": {},
+      "volume": {}
+    }
+  ]
+}
+```
+
+Arquivo: [`examples/lote-nfe.json`](/examples/lote-nfe.json)
+
+## cURL
+
+```bash
+curl --request POST \
+  --url https://hom.portalgsf.com.br/api-boss/send_json/ \
+  --header 'Authorization: JWT <token>' \
+  --header 'Content-Type: application/json' \
+  --data @examples/lote-nfe.json
+```
+
+## Checklist
+
+<Check>Raiz do JSON é `{ "Lote": [ ... ] }`</Check>
+<Check>`codigoOrigem` único por documento</Check>
+<Check>CNPJ sem máscara: `22760852000110`</Check>
+<Check>Datas em `DD/MM/AAAA`</Check>
+<Check>Após o envio, consultar com o mesmo `codigoOrigem` em `/api/v1/nfe/consulta/`</Check>

@@ -1,0 +1,89 @@
+---
+title: "NFS-e — catálogo de campos"
+description: "Atributos do lote de recebimento de NFS-e."
+---
+
+O body de `POST /api/v1/nfse/` é um **array** de documentos.
+
+## Documento
+
+| Atributo | Descrição | Tipo | Obrig. | Instrução |
+| --- | --- | --- | --- | --- |
+| `multorgCd` | Código Multorg | Text | Sim | Acordado na implantação |
+| `cnpjEmit` | CNPJ emitente | Text | Sim | Somente dígitos. Ex.: `22760852000110` |
+| `imEmit` | Inscrição municipal | Text | Não | Sem máscara |
+| `serie` | Série | Text | Sim | |
+| `nroNf` | Número da nota | Numérico | Sim | |
+| `dtEmiss` | Data de emissão | Data | Sim | `DD/MM/AAAA` |
+| `hrEmiss` | Hora de emissão | Hora | Sim | `HH:MM:SS` |
+| `dtExeServ` | Data execução serviço | Data | Sim | `DD/MM/AAAA` |
+| `chaveNfse` | Chave NFS-e | Text | Sim | `"0"` se ainda inexistente |
+| `dmNatOper` | Natureza da operação | Text | Sim | Domínio acordado |
+| `responsavelRetencao` | Responsável retenção | Text | Sim | |
+| `nroRpsSubst` | Nº RPS substituído | Numérico | Sim | `0` se não for substituição |
+| `serieRpsSubst` | Série RPS substituído | Text | Sim | `"0"` se não aplicável |
+| `cdCidadeModFiscal` | Cidade modelo fiscal | Text | Sim | IBGE ou `"0"` |
+| `nroProc` | Nº processo | Text | Sim | |
+| `sistOrig` | Sistema de origem | Text | Sim | Nome do ERP |
+| `unidOrg` | Unidade organizacional | Text | Não | Aceita `null` |
+| `idNfErp` | ID no sistema origem | Numérico | Sim | **Mesmo conceito de `codigoOrigem` / `cod_origem`** |
+| `cdNatOper` | Código natureza | Text | Não | Aceita `null` |
+| `pessoaNfs` | Tomador | Objeto | Não | Aceita `null` |
+| `interNfs` | Intermediação | Objeto | Não | Aceita `null` |
+| `constrNfs` | Construção civil | Objeto | Não | Aceita `null` |
+| `itemNfsList` | Itens | Array | Sim | Mínimo 1 |
+
+## Item (`itemNfsList[]`)
+
+| Atributo | Descrição | Tipo | Obrig. | Instrução |
+| --- | --- | --- | --- | --- |
+| `nroItem` | Sequência | Numérico | Sim | Inicia em `1` |
+| `codItem` | Código do serviço | Text | Sim | |
+| `descricao` | Descrição | Text | Sim | |
+| `cnae` | CNAE | Text | Não | Pode ser `""` |
+| `cdListaServ` | Lista de serviços | Text | Sim | |
+| `codigoNbs` | Código NBS | Text | Sim | |
+| `indOp` | Indicador operação | Text | Não | |
+| `cClassTrib` | Classificação tributária | Text | Sim | |
+| `codCstTrib` | CST CBS/IBS | Text | Não | |
+| `codTribMunicipio` | Cód. trib. municipal | Text | Não | |
+| `dmLocIncidIss` | Local incidência ISS | Text | Sim | |
+| `cidadeIbge` | Município | Text | Sim | IBGE 7 dígitos |
+| `codigoPais` | País | Text | Sim | Brasil = `1058` |
+| `vlServico` | Valor serviço | Decimal | Sim | 2 casas |
+| `vlDescIncondicionado` | Desc. incondicionado | Decimal | Sim | `0.00` se zero |
+| `vlDescCondicionado` | Desc. condicionado | Decimal | Sim | |
+| `vlDeducao` | Deduções | Decimal | Sim | |
+| `vlOutraRetencao` | Outras retenções | Decimal | Sim | |
+| `conteudoInfAdic` | Inf. adicionais | Text | Não | |
+| `vlPisRet` … `vlCsllRet` | Retenções | Decimal | Sim | |
+| `vlTotTributos` | Total tributos | Decimal | Sim | |
+| `vlBaseCalcIss` | Base ISS | Decimal | Sim | |
+| `aliquotaIss` | Alíquota ISS (%) | Decimal | Sim | `5.00` = 5% |
+| `vlIss` | Valor ISS | Decimal | Sim | |
+| `vlIssRetido` | ISS retido | Decimal | Sim | |
+| `itemNfsComplDto` | Tributos complementares | Objeto | Não | PIS/COFINS/IBS/CBS |
+
+## Tributos complementares (`itemNfsComplDto`)
+
+| Atributo | Descrição |
+| --- | --- |
+| `codStPis` / `bcPis` / `aliqPis` / `vlPis` | PIS |
+| `codstCofins` / `bcCofins` / `aliqCofins` / `vlCofins` | COFINS |
+| `bcPisRet` / `aliqPisRet` / … / `aliqInssRet` | Bases e alíquotas de retenção |
+| `codCta` | Conta contábil (opcional) |
+| `aliqIBS` / `vlIBS` / `aliqCBS` / `vlCBS` | IBS e CBS |
+
+## Tomador (`pessoaNfs`)
+
+Quando informado:
+
+| Atributo | Descrição | Obrig. |
+| --- | --- | --- |
+| `codPart` | Código da parte | Sim |
+| `cpfTomador` | CPF | Condicional |
+| `cnpjTomador` | CNPJ | Condicional |
+
+<Tip>
+Veja o [exemplo completo](/nfse/exemplo-lote) com CNPJ GSF Soluções `22760852000110`.
+</Tip>

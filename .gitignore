@@ -1,0 +1,33 @@
+# Dependências / build
+node_modules/
+.npm/
+.yarn/
+.pnpm-store/
+
+# Mintlify local
+.mintlify/
+.next/
+out/
+dist/
+
+# Ambiente / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs / cache
+*.log
+.cache/
+tmp/
+temp/

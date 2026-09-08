@@ -1,0 +1,117 @@
+---
+title: "NFS-e — exemplo de lote"
+description: "Payload de exemplo com dados da GSF Soluções."
+---
+
+Exemplo de lote para `POST /api/v1/nfse/`, com emitente **GSF Soluções** (`22760852000110`).
+
+<Warning>
+Valores de homologação — sem efeito fiscal.
+</Warning>
+
+```json
+[
+  {
+    "multorgCd": "197",
+    "cnpjEmit": "22760852000110",
+    "imEmit": "12345678",
+    "serie": "1",
+    "nroNf": 1001,
+    "dtEmiss": "08/09/2026",
+    "hrEmiss": "10:00:00",
+    "dtExeServ": "08/09/2026",
+    "chaveNfse": "0",
+    "dmNatOper": "1",
+    "responsavelRetencao": "0",
+    "nroRpsSubst": 0,
+    "serieRpsSubst": "0",
+    "cdCidadeModFiscal": "0",
+    "nroProc": "0",
+    "sistOrig": "ERP",
+    "unidOrg": null,
+    "idNfErp": 10012026,
+    "cdNatOper": null,
+    "pessoaNfs": null,
+    "interNfs": null,
+    "constrNfs": null,
+    "itemNfsList": [
+      {
+        "nroItem": 1,
+        "codItem": "SERV001",
+        "descricao": "Prestacao de servicos de tecnologia da informacao",
+        "cnae": "",
+        "cdListaServ": "0105",
+        "codigoNbs": "1.1501.12.00",
+        "indOp": "100301",
+        "cClassTrib": "000001",
+        "codCstTrib": "000",
+        "codTribMunicipio": "0105",
+        "dmLocIncidIss": "3",
+        "cidadeIbge": "3550308",
+        "codigoPais": "1058",
+        "vlServico": 1000.0,
+        "vlDescIncondicionado": 0.0,
+        "vlDescCondicionado": 0.0,
+        "vlDeducao": 0.0,
+        "vlOutraRetencao": 0.0,
+        "conteudoInfAdic": "",
+        "vlPisRet": 0.0,
+        "vlCofinsRet": 0.0,
+        "vlInssRet": 0.0,
+        "vlIrRet": 0.0,
+        "vlCsllRet": 0.0,
+        "vlTotTributos": 0.0,
+        "vlBaseCalcIss": 1000.0,
+        "aliquotaIss": 5.0,
+        "vlIss": 50.0,
+        "vlIssRetido": 0.0,
+        "itemNfsComplDto": {
+          "codStPis": "01",
+          "bcPis": 1000.0,
+          "aliqPis": 1.65,
+          "vlPis": 16.5,
+          "codstCofins": "01",
+          "bcCofins": 1000.0,
+          "aliqCofins": 7.6,
+          "vlCofins": 76.0,
+          "bcPisRet": 0.0,
+          "aliqPisRet": 0.0,
+          "bcCofinsRet": 0.0,
+          "aliqCofinsRet": 0.0,
+          "bcIrRet": 0.0,
+          "aliqIrRet": 0.0,
+          "bcCsllRet": 0.0,
+          "aliqCsllRet": 0.0,
+          "bcInssRet": 0.0,
+          "aliqInssRet": 0.0,
+          "codCta": null,
+          "aliqIBS": 0.1,
+          "vlIBS": 1.0,
+          "aliqCBS": 0.9,
+          "vlCBS": 9.0
+        }
+      }
+    ]
+  }
+]
+```
+
+Arquivo: [`examples/lote-nfse.json`](/examples/lote-nfse.json)
+
+## cURL
+
+```bash
+curl --request POST \
+  --url https://hom.portalgsf.com.br/api-boss/estapar/ \
+  --header 'Authorization: JWT <token>' \
+  --header 'Content-Type: application/json' \
+  --data @examples/lote-nfse.json
+```
+
+## Checklist
+
+<Check>Header `Authorization: JWT …`</Check>
+<Check>Body é um **array**</Check>
+<Check>`cnpjEmit` = `22760852000110` (sem máscara)</Check>
+<Check>`idNfErp` preenchido (equivale a `codigoOrigem` / `cod_origem`)</Check>
+<Check>Após `200`, guardar `nroProtocolo` e consultar o retorno</Check>

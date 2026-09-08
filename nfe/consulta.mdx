@@ -1,0 +1,66 @@
+---
+title: "NF-e — consulta"
+description: "Consulta do retorno da NF-e por CNPJ e código de origem."
+---
+
+Consulte o processamento do documento enviado em `/api/v1/nfe/` usando o CNPJ do emitente e o `codigoOrigem`.
+
+## Endpoint
+
+```http
+POST /api/v1/nfe/consulta/
+Authorization: JWT <token>
+Content-Type: application/json
+```
+
+## Request
+
+| Campo | Tipo | Obrig. | Descrição |
+| --- | --- | --- | --- |
+| `cnpj` | string | Sim | CNPJ do emitente, somente dígitos |
+| `cod_origem` | string | Sim | Mesmo valor de `codigoOrigem` do envio |
+
+```json
+{
+  "cnpj": "22760852000110",
+  "cod_origem": "GSF|1001"
+}
+```
+
+## Respostas
+
+### `200`
+
+| Campo | Descrição |
+| --- | --- |
+| `STATUS` | `10` aguardando · `100` autorizado · `101` cancelado · `400` erro |
+| `NUMERO` | Identificador oficial |
+| `COD_VERIFICACAO` | Protocolo |
+| `LINK_PDF` | Link do PDF |
+| `MENSAGEM` | Mensagem |
+| `XML` / `XML_RETORNO` | XMLs |
+
+### `204`
+
+Ainda processando — repita a consulta. Não reenvie o lote.
+
+### `412`
+
+`cnpj` ou `cod_origem` nulo.
+
+## cURL
+
+```bash
+curl --request POST \
+  --url https://hom.portalgsf.com.br/api-boss/invoiceReturnWxml/ \
+  --header 'Authorization: JWT <token>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "cnpj": "22760852000110",
+    "cod_origem": "GSF|1001"
+  }'
+```
+
+<Tip>
+O mesmo contrato de consulta serve para NFS-e e NF-e. A diferença está no código de origem usado no envio (`idNfErp` ou `codigoOrigem`).
+</Tip>

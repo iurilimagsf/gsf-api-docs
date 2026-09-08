@@ -1,0 +1,127 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "GSF Soluções API",
+  "description": "Especificações técnicas da API GSF Soluções para NFS-e, NF-e e SEFAZ.",
+  "colors": {
+    "primary": "#91BA2E",
+    "light": "#91BA2E",
+    "dark": "#546B19"
+  },
+  "logo": {
+    "light": "/images/logo.png",
+    "dark": "/images/logo.png",
+    "href": "/"
+  },
+  "favicon": "/images/logo.png",
+  "font": {
+    "headings": "Source Sans 3",
+    "body": "Source Sans 3"
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Começar",
+        "groups": [
+          {
+            "group": "Introdução",
+            "pages": [
+              "index",
+              "autenticacao"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "NFS-e",
+        "groups": [
+          {
+            "group": "Recebimento",
+            "pages": [
+              "nfse/visao-geral",
+              "nfse/campos",
+              "nfse/exemplo-lote",
+              "nfse/consulta"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "NF-e",
+        "groups": [
+          {
+            "group": "Recebimento",
+            "pages": [
+              "nfe/visao-geral",
+              "nfe/exemplo-lote",
+              "nfe/consulta"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "SEFAZ",
+        "groups": [
+          {
+            "group": "Envio XML",
+            "pages": [
+              "sefaz/visao-geral"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Referência",
+        "groups": [
+          {
+            "group": "Autenticação",
+            "pages": ["referencia/auth-token"]
+          },
+          {
+            "group": "NFS-e",
+            "pages": ["referencia/nfse-enviar", "referencia/nfse-consulta"]
+          },
+          {
+            "group": "NF-e",
+            "pages": ["referencia/nfe-enviar", "referencia/nfe-consulta"]
+          },
+          {
+            "group": "SEFAZ",
+            "pages": ["referencia/sefaz-enviar"]
+          }
+        ]
+      }
+    ]
+  },
+  "api": {
+    "playground": {
+      "display": "interactive",
+      "proxy": true
+    },
+    "examples": {
+      "languages": [
+        "curl",
+        "python",
+        "javascript"
+      ],
+      "defaults": "required",
+      "prefill": true
+    },
+    "auth": {
+      "method": "key",
+      "name": "Authorization",
+      "inputPrefix": "JWT "
+    }
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "GSF Soluções",
+        "href": "https://gsfsolucoes.com.br/"
+      }
+    ]
+  },
+  "footer": {
+    "socials": {}
+  }
+}

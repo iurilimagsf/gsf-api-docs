@@ -1,0 +1,583 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "GSF Soluções API",
+    "version": "1.0.0",
+    "description": "Playground de homologação.\n\nContrato público documentado nas páginas: `/api/v1/auth/token/`, `/api/v1/nfse/`, `/api/v1/nfse/consulta/`, `/api/v1/nfe/`, `/api/v1/nfe/consulta/`, `/api/v1/nfe/sefaz/`."
+  },
+  "servers": [
+    {
+      "url": "https://hom.portalgsf.com.br/api-boss",
+      "description": "Homologação GSF"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Autenticacao",
+      "description": "Emissão do token JWT."
+    },
+    {
+      "name": "NFSe",
+      "description": "Recebimento e consulta de NFS-e."
+    },
+    {
+      "name": "NFe",
+      "description": "Recebimento e consulta de NF-e (JSON Lote)."
+    },
+    {
+      "name": "SEFAZ",
+      "description": "Envio de XML para o fluxo SEFAZ."
+    }
+  ],
+  "paths": {
+    "/api-token-auth/": {
+      "post": {
+        "tags": [
+          "Autenticacao"
+        ],
+        "summary": "POST /api/v1/auth/token/",
+        "description": "Contrato público: `POST /api/v1/auth/token/`.\n\nRetorna JWT. Header: `Authorization: JWT <token>` (não Bearer).",
+        "operationId": "obterToken",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRequest"
+              },
+              "example": {
+                "username": "<usuario_integracao>",
+                "password": "<senha>"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token emitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                },
+                "example": {
+                  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Credenciais inválidas"
+          }
+        }
+      }
+    },
+    "/estapar/": {
+      "post": {
+        "tags": [
+          "NFSe"
+        ],
+        "summary": "POST /api/v1/nfse/",
+        "description": "Contrato público: `POST /api/v1/nfse/`.\n\nBody: **array JSON**. Resposta: `nroProtocolo`.",
+        "operationId": "enviarLoteNfse",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              },
+              "example": [
+                {
+                  "multorgCd": "197",
+                  "cnpjEmit": "22760852000110",
+                  "imEmit": "12345678",
+                  "serie": "1",
+                  "nroNf": 1001,
+                  "dtEmiss": "08/09/2026",
+                  "hrEmiss": "10:00:00",
+                  "dtExeServ": "08/09/2026",
+                  "chaveNfse": "0",
+                  "dmNatOper": "1",
+                  "responsavelRetencao": "0",
+                  "nroRpsSubst": 0,
+                  "serieRpsSubst": "0",
+                  "cdCidadeModFiscal": "0",
+                  "nroProc": "0",
+                  "sistOrig": "ERP",
+                  "unidOrg": null,
+                  "idNfErp": 10012026,
+                  "cdNatOper": null,
+                  "pessoaNfs": null,
+                  "interNfs": null,
+                  "constrNfs": null,
+                  "itemNfsList": [
+                    {
+                      "nroItem": 1,
+                      "codItem": "SERV001",
+                      "descricao": "Prestacao de servicos de tecnologia da informacao",
+                      "cnae": "",
+                      "cdListaServ": "0105",
+                      "codigoNbs": "1.1501.12.00",
+                      "indOp": "100301",
+                      "cClassTrib": "000001",
+                      "codCstTrib": "000",
+                      "codTribMunicipio": "0105",
+                      "dmLocIncidIss": "3",
+                      "cidadeIbge": "3550308",
+                      "codigoPais": "1058",
+                      "vlServico": 1000.0,
+                      "vlDescIncondicionado": 0.0,
+                      "vlDescCondicionado": 0.0,
+                      "vlDeducao": 0.0,
+                      "vlOutraRetencao": 0.0,
+                      "conteudoInfAdic": "",
+                      "vlPisRet": 0.0,
+                      "vlCofinsRet": 0.0,
+                      "vlInssRet": 0.0,
+                      "vlIrRet": 0.0,
+                      "vlCsllRet": 0.0,
+                      "vlTotTributos": 0.0,
+                      "vlBaseCalcIss": 1000.0,
+                      "aliquotaIss": 5.0,
+                      "vlIss": 50.0,
+                      "vlIssRetido": 0.0,
+                      "itemNfsComplDto": {
+                        "codStPis": "01",
+                        "bcPis": 1000.0,
+                        "aliqPis": 1.65,
+                        "vlPis": 16.5,
+                        "codstCofins": "01",
+                        "bcCofins": 1000.0,
+                        "aliqCofins": 7.6,
+                        "vlCofins": 76.0,
+                        "bcPisRet": 0.0,
+                        "aliqPisRet": 0.0,
+                        "bcCofinsRet": 0.0,
+                        "aliqCofinsRet": 0.0,
+                        "bcIrRet": 0.0,
+                        "aliqIrRet": 0.0,
+                        "bcCsllRet": 0.0,
+                        "aliqCsllRet": 0.0,
+                        "bcInssRet": 0.0,
+                        "aliqInssRet": 0.0,
+                        "codCta": null,
+                        "aliqIBS": 0.1,
+                        "vlIBS": 1.0,
+                        "aliqCBS": 0.9,
+                        "vlCBS": 9.0
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lote aceito",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "nroProtocolo": "Protoc-20260908100000123456"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Payload inválido"
+          },
+          "401": {
+            "description": "Token inválido"
+          }
+        }
+      }
+    },
+    "/send_json/": {
+      "post": {
+        "tags": [
+          "NFe"
+        ],
+        "summary": "POST /api/v1/nfe/",
+        "description": "Contrato público: `POST /api/v1/nfe/`.\n\nBody: `{ \"Lote\": [ ... ] }` (1–200). Correlacione com `codigoOrigem`.",
+        "operationId": "enviarLoteNfe",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "Lote"
+                ],
+                "properties": {
+                  "Lote": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 200,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              },
+              "example": {
+                "Lote": [
+                  {
+                    "capa": {
+                      "codOp": "T",
+                      "dhEmi": "08/09/2026",
+                      "docReferenciado": {},
+                      "enderLocPrest": {},
+                      "infEspecie": [],
+                      "infGTVe": [],
+                      "issRetido": "N",
+                      "item": [
+                        {
+                          "CFOP": "5933",
+                          "cTribMun": "001",
+                          "calculaIBSCBS": true,
+                          "cserv": "0105",
+                          "imposto": {
+                            "COFINS": {
+                              "vAliq": 3,
+                              "vBase": 1000.0,
+                              "vValor": 30.0,
+                              "CST": ""
+                            },
+                            "COFINS_RET": {
+                              "vAliq": 0,
+                              "vBase": 0,
+                              "vValor": 0,
+                              "CST": ""
+                            },
+                            "CSLL": {
+                              "vAliq": 0,
+                              "vBase": 0,
+                              "vValor": 0
+                            },
+                            "FCP": {},
+                            "FUNTTEL": {},
+                            "FUST": {},
+                            "ICMS": {},
+                            "INSS": {
+                              "vAliq": 0,
+                              "vBase": 0,
+                              "vValor": 0
+                            },
+                            "IPI": {},
+                            "IRRF": {
+                              "vAliq": 0,
+                              "vBase": 0,
+                              "vValor": 0
+                            },
+                            "ISS": {
+                              "vAliq": 5,
+                              "vBase": 1000.0,
+                              "vValor": 50.0
+                            },
+                            "ISS_RET": {},
+                            "PIS": {
+                              "vAliq": 0.65,
+                              "vBase": 1000.0,
+                              "vValor": 6.5,
+                              "CST": ""
+                            },
+                            "PIS_RET": {
+                              "vAliq": 0,
+                              "vBase": 0,
+                              "vValor": 0,
+                              "CST": ""
+                            },
+                            "vOutrasRetencoes": 0
+                          },
+                          "indProdServ": "S",
+                          "prodServ": {
+                            "cserv": "010501",
+                            "itemLC116": "0105",
+                            "xserv": "LICENCIAMENTO OU CESSAO DE DIREITO DE USO DE PROGRAMAS DE COMPUTACAO"
+                          },
+                          "qtd": 1,
+                          "vlTot": 1000.0,
+                          "vlUni": 1000.0,
+                          "xserv": "SERVICOS DE TECNOLOGIA DA INFORMACAO - GSF SOLUCOES"
+                        }
+                      ],
+                      "munIssDevido": 3550308,
+                      "municPrest": 3550308,
+                      "nNF": 1001,
+                      "natOp": "PRESTACAO DE SERVICOS DE TI",
+                      "serie": "1",
+                      "tpNF": "NFE",
+                      "tpOperacao": 1,
+                      "vDescCondicionado": 0,
+                      "vDescIncondicionado": 0,
+                      "vFat": 1000.0,
+                      "vLiquido": 1000.0,
+                      "vNF": 1000.0,
+                      "vServ": 1000.0
+                    },
+                    "codigoOrigem": "GSF|1001",
+                    "destinatario": {
+                      "CNPJ": "22760852000110",
+                      "IE": "",
+                      "xNome": "GSF SOLUCOES LTDA",
+                      "cnae": "6201501",
+                      "email": "integracao@gsfsolucoes.com.br",
+                      "regEspcTrib": "",
+                      "xFant": "GSF SOLUCOES",
+                      "IM": "",
+                      "enderDest": {
+                        "CEP": "01310100",
+                        "UF": "SP",
+                        "nro": "1000",
+                        "tpLgr": "AV",
+                        "xBairro": "BELA VISTA",
+                        "xCpl": "",
+                        "xLgr": "PAULISTA",
+                        "xMun": "3550308",
+                        "fone": "1130000000",
+                        "xPais": "1058"
+                      },
+                      "indIEDest": ""
+                    },
+                    "emitente": {
+                      "CNPJ": "22760852000110",
+                      "IE": "ISENTO",
+                      "xNome": "GSF SOLUCOES LTDA",
+                      "cnae": "6201501",
+                      "email": "fiscal@gsfsolucoes.com.br",
+                      "regEspcTrib": "",
+                      "xFant": "GSF SOLUCOES",
+                      "IM": "12345678",
+                      "enderEmit": {
+                        "CEP": "01310100",
+                        "UF": "SP",
+                        "nro": "1000",
+                        "xBairro": "BELA VISTA",
+                        "xCpl": "CJ 101",
+                        "xLgr": "AV PAULISTA",
+                        "xMun": "3550308",
+                        "fone": "1130000000",
+                        "xPais": "1058"
+                      }
+                    },
+                    "fatura": {},
+                    "gtv": {
+                      "infGTV": []
+                    },
+                    "infAdic": {
+                      "infCpl": ""
+                    },
+                    "intermediario": {
+                      "enderInter": {}
+                    },
+                    "transportadora": {},
+                    "volume": {}
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lote processado estruturalmente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "recebidas": 1,
+                  "processadas": 1,
+                  "rejeitadas": 0,
+                  "erros": []
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Payload inválido"
+          },
+          "401": {
+            "description": "Token inválido"
+          }
+        }
+      }
+    },
+    "/invoiceReturnWxml/": {
+      "post": {
+        "tags": [
+          "NFSe",
+          "NFe"
+        ],
+        "summary": "POST /api/v1/{nfse|nfe}/consulta/",
+        "description": "Contrato público: `POST /api/v1/nfse/consulta/` ou `POST /api/v1/nfe/consulta/`.\n\nBody: `cnpj` + `cod_origem` (`idNfErp` na NFS-e / `codigoOrigem` na NF-e).",
+        "operationId": "consultarRetorno",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsultaRequest"
+              },
+              "example": {
+                "cnpj": "22760852000110",
+                "cod_origem": "GSF|1001"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Retorno disponível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "CNPJ": "22760852000110",
+                  "COD_ORIGEM": "GSF|1001",
+                  "STATUS": "100",
+                  "NUMERO": "123",
+                  "MENSAGEM": "Autorizado"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Ainda processando"
+          },
+          "401": {
+            "description": "Token inválido"
+          },
+          "412": {
+            "description": "Parâmetro obrigatório nulo"
+          }
+        }
+      }
+    },
+    "/send_xml/": {
+      "post": {
+        "tags": [
+          "SEFAZ"
+        ],
+        "summary": "POST /api/v1/nfe/sefaz/",
+        "description": "Contrato público: `POST /api/v1/nfe/sefaz/`.\n\n`multipart/form-data`: `xml` + `cnpj`.",
+        "operationId": "enviarXmlSefaz",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "xml",
+                  "cnpj"
+                ],
+                "properties": {
+                  "xml": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "cnpj": {
+                    "type": "string",
+                    "example": "22760852000110"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "XML aceito"
+          },
+          "400": {
+            "description": "Arquivo ou CNPJ inválido"
+          },
+          "401": {
+            "description": "Token inválido"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "jwtAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "JWT <token> (prefixo JWT, não Bearer)."
+      }
+    },
+    "schemas": {
+      "TokenRequest": {
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "format": "password"
+          }
+        }
+      },
+      "TokenResponse": {
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+      "ConsultaRequest": {
+        "type": "object",
+        "required": [
+          "cnpj",
+          "cod_origem"
+        ],
+        "properties": {
+          "cnpj": {
+            "type": "string",
+            "example": "22760852000110"
+          },
+          "cod_origem": {
+            "type": "string",
+            "example": "GSF|1001"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "jwtAuth": []
+    }
+  ]
+}

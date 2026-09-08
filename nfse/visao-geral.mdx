@@ -1,0 +1,71 @@
+---
+title: "NFS-e — visão geral"
+description: "Recebimento de NFS-e em JSON e acompanhamento por protocolo."
+---
+
+Envie notas de serviço em JSON e acompanhe o processamento pelo protocolo retornado.
+
+## Endpoints
+
+| Operação | Path público | Sucesso |
+| --- | --- | --- |
+| Enviar lote | `POST /api/v1/nfse/` | `{ "nroProtocolo": "..." }` |
+| Consultar retorno | `POST /api/v1/nfse/consulta/` | Status + XML/PDF quando disponível |
+
+<Warning>
+`200` no envio confirma o **recebimento** do lote. A autorização municipal só aparece na consulta, com status final autorizado.
+</Warning>
+
+## Enviar lote
+
+```http
+POST /api/v1/nfse/
+Authorization: JWT <token>
+Content-Type: application/json
+```
+
+O body é um **array**. Cada elemento é uma NFS-e com seus itens em `itemNfsList`.
+
+### Resposta `200`
+
+```json
+{
+  "nroProtocolo": "Protoc-20260908100000123456"
+}
+```
+
+Guarde o `nroProtocolo` e o identificador de origem (`idNfErp`, equivalente ao `codigoOrigem` / `cod_origem` na consulta).
+
+## Consultar retorno
+
+Use `POST /api/v1/nfse/consulta/` com:
+
+| Campo | Descrição |
+| --- | --- |
+| `cnpj` | CNPJ do emitente (somente dígitos) |
+| `cod_origem` | Código de origem do sistema remetente (= `idNfErp` / `codigoOrigem`) |
+
+Veja detalhes em [Consulta NFS-e](/nfse/consulta).
+
+## Boas práticas
+
+<AccordionGroup>
+  <Accordion title="Não reenvie enquanto processa">
+    Se a consulta ainda não trouxe status final, aguarde e consulte novamente. Reenviar o mesmo documento pode gerar duplicidade.
+  </Accordion>
+  <Accordion title="Correlação com o ERP">
+    `idNfErp` é o identificador do documento no sistema de origem — o mesmo papel de `codigoOrigem` / `cod_origem` na consulta de retorno.
+  </Accordion>
+  <Accordion title="Formatos">
+    CNPJ sem máscara (`22760852000110`). Datas em `DD/MM/AAAA`. Horas em `HH:MM:SS`. Município pelo IBGE (7 dígitos).
+  </Accordion>
+</AccordionGroup>
+
+<CardGroup cols={2}>
+  <Card title="Catálogo de campos" icon="table" href="/nfse/campos">
+    Atributos, tipos e obrigatoriedade.
+  </Card>
+  <Card title="Exemplo de lote" icon="code" href="/nfse/exemplo-lote">
+    Payload completo com dados GSF Soluções.
+  </Card>
+</CardGroup>

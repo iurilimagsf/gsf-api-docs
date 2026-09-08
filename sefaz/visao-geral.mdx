@@ -1,0 +1,55 @@
+---
+title: "SEFAZ — envio de XML"
+description: "Como enviar o XML fiscal para o fluxo SEFAZ."
+---
+
+Envie o arquivo XML e o CNPJ em `multipart/form-data` para processamento no fluxo SEFAZ.
+
+## Endpoint
+
+```http
+POST /api/v1/nfe/sefaz/
+Authorization: JWT <token>
+Content-Type: multipart/form-data
+```
+
+## Campos
+
+| Campo | Tipo | Obrig. | Instrução |
+| --- | --- | --- | --- |
+| `xml` | arquivo | Sim | `application/xml` ou `text/xml` · máx. 3 MiB |
+| `cnpj` | string | Sim | Somente dígitos. Ex.: `22760852000110` |
+
+<Warning>
+Envie o XML como **arquivo**, não como texto JSON nem Base64.
+</Warning>
+
+## Exemplo
+
+```bash
+curl --request POST \
+  --url https://hom.portalgsf.com.br/api-boss/send_xml/ \
+  --header 'Authorization: JWT <token>' \
+  --form 'cnpj=22760852000110' \
+  --form 'xml=@./documento.xml;type=application/xml'
+```
+
+## Respostas
+
+| HTTP | Significado |
+| --- | --- |
+| `200` | XML aceito e armazenado |
+| `400` | Arquivo ou CNPJ inválido |
+| `401` | Token inválido |
+| `500` | Erro interno |
+
+<Note>
+`200` confirma o recebimento do arquivo. Não interprete isoladamente como autorização SEFAZ.
+</Note>
+
+## Cuidados
+
+- Preserve assinatura digital e namespaces.
+- Mantenha a declaração de encoding do XML.
+- Use extensão `.xml` no nome do arquivo.
+- Não registre o XML completo em logs públicos.

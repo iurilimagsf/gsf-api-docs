@@ -1,0 +1,14 @@
+---
+title: "POST /api/v1/nfse/consulta/"
+description: "Consulta o processamento por CNPJ e código de origem."
+openapi: "openapi/public.json POST /invoiceReturnWxml/"
+---
+
+<Note>
+Contrato público: `POST /api/v1/nfse/consulta/`. O playground chama a homologação GSF.
+</Note>
+
+| Campo | Descrição |
+| --- | --- |
+| `cnpj` | CNPJ do emitente (somente dígitos), ex.: `22760852000110` |
+| `cod_origem` | Mesmo valor de `idNfErp` / código de origem do sistema origem |

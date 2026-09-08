@@ -1,0 +1,11 @@
+---
+title: "POST /api/v1/nfe/"
+description: "Recebe documentos no formato Lote."
+openapi: "openapi/public.json POST /send_json/"
+---
+
+<Note>
+Contrato público: `POST /api/v1/nfe/`. O playground chama a homologação GSF.
+</Note>
+
+Body raiz: `{ "Lote": [ ... ] }`. Use `codigoOrigem` para correlacionar com a consulta.

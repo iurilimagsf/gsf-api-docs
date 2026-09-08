@@ -1,0 +1,93 @@
+---
+title: "NF-e — visão geral"
+description: "Recebimento de NF-e em JSON (Lote) e consulta do retorno."
+---
+
+Envie documentos fiscais em JSON no formato `Lote` e consulte o retorno pelo código de origem.
+
+## Endpoints
+
+| Operação | Path público | Sucesso |
+| --- | --- | --- |
+| Enviar lote | `POST /api/v1/nfe/` | Aceite estrutural (`recebidas` / `processadas` / `rejeitadas`) |
+| Consultar retorno | `POST /api/v1/nfe/consulta/` | Status + XML/PDF quando disponível |
+
+<Warning>
+`200` no envio indica que o lote foi **aceito para processamento**. A autorização fiscal só existe na consulta com `STATUS = "100"`.
+</Warning>
+
+## Enviar lote
+
+```http
+POST /api/v1/nfe/
+Authorization: JWT <token>
+Content-Type: application/json
+```
+
+### Estrutura
+
+```json
+{
+  "Lote": [
+    {
+      "codigoOrigem": "GSF|1001",
+      "emitente": { },
+      "destinatario": { },
+      "capa": { },
+      "infAdic": { }
+    }
+  ]
+}
+```
+
+| Regra | Detalhe |
+| --- | --- |
+| Cardinalidade | `1 ≤ Lote ≤ 200` |
+| Correlação | `codigoOrigem` (envio) ≡ `cod_origem` (consulta) |
+| Datas | `DD/MM/AAAA` |
+| CNPJ | Somente dígitos — ex.: `22760852000110` |
+
+### Resposta `200` (exemplo)
+
+```json
+{
+  "recebidas": 1,
+  "processadas": 1,
+  "rejeitadas": 0,
+  "erros": []
+}
+```
+
+Quando houver rejeição parcial, `erros[]` traz `codigoOrigem` + lista de `path` / `mensagem`.
+
+## Consultar retorno
+
+`POST /api/v1/nfe/consulta/` com `cnpj` + `cod_origem` (mesmo valor de `codigoOrigem` do envio).
+
+Detalhes em [Consulta NF-e](/nfe/consulta).
+
+## Grupos principais do payload
+
+<AccordionGroup>
+  <Accordion title="emitente">
+    Dados da empresa emitente: CNPJ, IE, IM, nome, endereço (`enderEmit`). Envie CNPJ sem formatação.
+  </Accordion>
+  <Accordion title="destinatario">
+    Tomador/destinatário: CNPJ/CPF, nome, endereço (`enderDest`), e-mail quando houver.
+  </Accordion>
+  <Accordion title="capa">
+    Cabeçalho do documento: `natOp`, `nNF`, `serie`, `dhEmi`, `tpNF`, `tpOperacao`, valores e itens.
+  </Accordion>
+  <Accordion title="item[] / imposto">
+    Itens com `indProdServ` (`S` serviço / `P` produto), `prodServ`, quantidades, valores e bloco `imposto` (ISS, PIS, COFINS, ICMS, etc.).
+  </Accordion>
+</AccordionGroup>
+
+<CardGroup cols={2}>
+  <Card title="Exemplo de lote" icon="code" href="/nfe/exemplo-lote">
+    JSON completo com dados GSF Soluções.
+  </Card>
+  <Card title="Consulta" icon="magnifying-glass" href="/nfe/consulta">
+    Como obter STATUS, XML e PDF.
+  </Card>
+</CardGroup>

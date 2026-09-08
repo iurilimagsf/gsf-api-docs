@@ -1,0 +1,82 @@
+---
+title: "NFS-e — consulta"
+description: "Consulta do retorno da NFS-e por CNPJ e código de origem."
+---
+
+Após o envio do lote, consulte o processamento com o CNPJ do emitente e o código de origem do documento.
+
+## Endpoint
+
+```http
+POST /api/v1/nfse/consulta/
+Authorization: JWT <token>
+Content-Type: application/json
+```
+
+## Request
+
+| Campo | Tipo | Obrig. | Descrição |
+| --- | --- | --- | --- |
+| `cnpj` | string | Sim | CNPJ do emitente, somente dígitos |
+| `cod_origem` | string | Sim | Código de origem do sistema remetente. **Equivale a `idNfErp` do envio e a `codigoOrigem`.** |
+
+```json
+{
+  "cnpj": "22760852000110",
+  "cod_origem": "10012026"
+}
+```
+
+<Note>
+Também é aceito `multipart/form-data` com os mesmos campos.
+</Note>
+
+## Respostas
+
+### `200` — retorno disponível
+
+Campos em **MAIÚSCULAS**:
+
+| Campo | Descrição |
+| --- | --- |
+| `CNPJ` | CNPJ consultado |
+| `COD_ORIGEM` | Código de origem |
+| `STATUS` | `10` aguardando · `100` autorizado · `101` cancelado · `400` erro/rejeição |
+| `NUMERO` | Número/chave oficial |
+| `COD_VERIFICACAO` | Protocolo / código de verificação |
+| `LINK_PDF` | Link do PDF, quando houver |
+| `MENSAGEM` | Mensagem do processamento |
+| `XML` / `XML_RETORNO` | XMLs, quando disponíveis |
+
+### `204` — ainda processando
+
+```json
+{
+  "status": 204,
+  "message": "Record not found!"
+}
+```
+
+Aguarde e consulte novamente. **Não reenvie** o lote só porque a consulta retornou `204`.
+
+### Status — o que fazer
+
+| `STATUS` | Ação |
+| --- | --- |
+| `10` | Continuar o polling |
+| `100` | Persistir número, verificação, PDF e XML |
+| `101` | Tratar cancelamento |
+| `400` | Ler `MENSAGEM`, corrigir e só então reenviar |
+
+## cURL
+
+```bash
+curl --request POST \
+  --url https://hom.portalgsf.com.br/api-boss/invoiceReturnWxml/ \
+  --header 'Authorization: JWT <token>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "cnpj": "22760852000110",
+    "cod_origem": "10012026"
+  }'
+```
