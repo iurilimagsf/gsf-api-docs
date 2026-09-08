@@ -5,6 +5,10 @@ description: "Como enviar o XML fiscal para o fluxo SEFAZ."
 
 Envie o arquivo XML e o CNPJ em `multipart/form-data` para processamento no fluxo SEFAZ.
 
+<Info>
+É esperado o **XML no padrão oficial disponibilizado pela SEFAZ** (layout vigente da NF-e / evento correspondente), com namespaces e assinatura digital preservados.
+</Info>
+
 ## Endpoint
 
 ```http
@@ -49,6 +53,7 @@ curl --request POST \
 
 ## Cuidados
 
+- Use o XML no **padrão SEFAZ** (não invente schema próprio).
 - Preserve assinatura digital e namespaces.
 - Mantenha a declaração de encoding do XML.
 - Use extensão `.xml` no nome do arquivo.

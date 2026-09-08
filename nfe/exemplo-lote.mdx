@@ -1,9 +1,9 @@
 ---
 title: "NF-e — exemplo de lote"
-description: "Payload JSON Lote com dados da GSF Soluções."
+description: "Payload JSON Lote de produto (NF-e) com dados da GSF Soluções."
 ---
 
-Exemplo para `POST /api/v1/nfe/` (`Lote` JSON), com emitente e destinatário **GSF Soluções** (`22760852000110`).
+Exemplo para `POST /api/v1/nfe/` (`Lote` JSON de **produto**, `indProdServ: "P"`), com emitente e destinatário **GSF Soluções** (`22760852000110`).
 
 <Warning>
 Valores de homologação — sem efeito fiscal.
@@ -23,79 +23,79 @@ Valores de homologação — sem efeito fiscal.
         "issRetido": "N",
         "item": [
           {
-            "CFOP": "5933",
-            "cTribMun": "001",
-            "calculaIBSCBS": true,
-            "cserv": "0105",
+            "CFOP": "5102",
+            "NCM": "73181500",
+            "cEAN": "SEM GTIN",
+            "cBenef": "",
             "imposto": {
               "COFINS": {
-                "vAliq": 3,
+                "CST": "01",
+                "vAliq": 7.6,
                 "vBase": 1000.0,
-                "vValor": 30.0,
-                "CST": ""
-              },
-              "COFINS_RET": {
-                "vAliq": 0,
-                "vBase": 0,
-                "vValor": 0,
-                "CST": ""
-              },
-              "CSLL": {
-                "vAliq": 0,
-                "vBase": 0,
-                "vValor": 0
+                "vValor": 76.0
               },
               "FCP": {},
               "FUNTTEL": {},
               "FUST": {},
-              "ICMS": {},
-              "INSS": {
-                "vAliq": 0,
-                "vBase": 0,
-                "vValor": 0
-              },
-              "IPI": {},
-              "IRRF": {
-                "vAliq": 0,
-                "vBase": 0,
-                "vValor": 0
-              },
-              "ISS": {
-                "vAliq": 5,
+              "ICMS": {
+                "CST": "00",
+                "orig": 0,
+                "modBC": 3,
+                "vAliq": 12,
                 "vBase": 1000.0,
-                "vValor": 50.0
+                "vValor": 120.0
               },
-              "ISS_RET": {},
+              "IPI": {
+                "CST": "53",
+                "vAliq": 0,
+                "vBase": 0,
+                "vValor": 0
+              },
               "PIS": {
-                "vAliq": 0.65,
+                "CST": "01",
+                "vAliq": 1.65,
                 "vBase": 1000.0,
-                "vValor": 6.5,
-                "CST": ""
+                "vValor": 16.5
               },
-              "PIS_RET": {
-                "vAliq": 0,
+              "II": {
                 "vBase": 0,
-                "vValor": 0,
-                "CST": ""
+                "vDespAdu": 0,
+                "vII": 0,
+                "vIOF": 0
               },
-              "vOutrasRetencoes": 0
+              "vOutras": 0
             },
-            "indProdServ": "S",
+            "dadosDI": {
+              "nDI": "",
+              "dDI": "",
+              "xLocDesemb": "",
+              "UFDesemb": "",
+              "dDesemb": "",
+              "tpViaTransp": "",
+              "vAFRMM": "",
+              "tpIntermedio": "",
+              "cExportador": "",
+              "nAdicao": "",
+              "nSeqAdic": "",
+              "cFabricante": "",
+              "nDraw": ""
+            },
+            "indProdServ": "P",
+            "xPed": "",
+            "nItemPed": "",
             "prodServ": {
-              "cserv": "010501",
-              "itemLC116": "0105",
-              "xserv": "LICENCIAMENTO OU CESSAO DE DIREITO DE USO DE PROGRAMAS DE COMPUTACAO"
+              "cprod": "0010",
+              "xprod": "Teste de emissao de NFe",
+              "uCom": "UN",
+              "uTrib": "UN"
             },
             "qtd": 1,
             "vlTot": 1000.0,
-            "vlUni": 1000.0,
-            "xserv": "SERVICOS DE TECNOLOGIA DA INFORMACAO - GSF SOLUCOES"
+            "vlUni": 1000.0
           }
         ],
-        "munIssDevido": 3550308,
-        "municPrest": 3550308,
         "nNF": 1001,
-        "natOp": "PRESTACAO DE SERVICOS DE TI",
+        "natOp": "Venda de mercadoria adquirida ou recebida de terceiros",
         "serie": "1",
         "tpNF": "NFE",
         "tpOperacao": 1,
@@ -104,7 +104,7 @@ Valores de homologação — sem efeito fiscal.
         "vFat": 1000.0,
         "vLiquido": 1000.0,
         "vNF": 1000.0,
-        "vServ": 1000.0
+        "vServ": 0
       },
       "codigoOrigem": "GSF|1001",
       "destinatario": {
@@ -151,7 +151,20 @@ Valores de homologação — sem efeito fiscal.
           "xPais": "1058"
         }
       },
-      "fatura": {},
+      "fatura": {
+        "nFat": "",
+        "vOrig": "",
+        "vDesc": "",
+        "vLiq": "",
+        "nDup": "",
+        "dVenc": "",
+        "vDup": ""
+      },
+      "pagamento": {
+        "indPag": "",
+        "tPag": "",
+        "vPag": ""
+      },
       "gtv": {
         "infGTV": []
       },
@@ -161,8 +174,35 @@ Valores de homologação — sem efeito fiscal.
       "intermediario": {
         "enderInter": {}
       },
-      "transportadora": {},
-      "volume": {}
+      "transportadora": {
+        "modFrete": 9,
+        "CNPJ": "",
+        "IE": "",
+        "xNome": "",
+        "cnae": "",
+        "email": "",
+        "xFant": "",
+        "IM": "",
+        "enderEmit": {
+          "CEP": "",
+          "UF": "",
+          "nro": "",
+          "xBairro": "",
+          "xCpl": "",
+          "xLgr": "",
+          "xMun": "",
+          "fone": "",
+          "xPais": ""
+        }
+      },
+      "volume": {
+        "qVol": "",
+        "esp": "",
+        "marca": "",
+        "nVol": "",
+        "pesoL": "",
+        "pesoB": ""
+      }
     }
   ]
 }
@@ -183,6 +223,7 @@ curl --request POST \
 ## Checklist
 
 <Check>Raiz do JSON é `{ "Lote": [ ... ] }`</Check>
+<Check>`indProdServ` = `P` para produto (mercadoria)</Check>
 <Check>`codigoOrigem` único por documento</Check>
 <Check>CNPJ sem máscara: `22760852000110`</Check>
 <Check>Datas em `DD/MM/AAAA`</Check>
