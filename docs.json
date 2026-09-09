@@ -19,9 +19,9 @@
     "body": "Source Sans 3"
   },
   "navigation": {
-    "tabs": [
+    "dropdowns": [
       {
-        "tab": "Começar",
+        "dropdown": "Começar",
         "groups": [
           {
             "group": "Introdução",
@@ -33,7 +33,7 @@
         ]
       },
       {
-        "tab": "NFS-e",
+        "dropdown": "NFS-e",
         "groups": [
           {
             "group": "Recebimento",
@@ -47,7 +47,7 @@
         ]
       },
       {
-        "tab": "NF-e",
+        "dropdown": "NF-e",
         "groups": [
           {
             "group": "Recebimento",
@@ -60,7 +60,7 @@
         ]
       },
       {
-        "tab": "SEFAZ",
+        "dropdown": "SEFAZ",
         "groups": [
           {
             "group": "Envio XML",
@@ -71,24 +71,42 @@
         ]
       },
       {
-        "tab": "Referência",
+        "dropdown": "Referência",
         "groups": [
           {
             "group": "Autenticação",
-            "pages": ["referencia/auth-token"]
+            "pages": [
+              "referencia/auth-token"
+            ]
           },
           {
             "group": "NFS-e",
-            "pages": ["referencia/nfse-enviar", "referencia/nfse-consulta"]
+            "pages": [
+              "referencia/nfse-enviar",
+              "referencia/nfse-consulta"
+            ]
           },
           {
             "group": "NF-e",
-            "pages": ["referencia/nfe-enviar", "referencia/nfe-consulta"]
+            "pages": [
+              "referencia/nfe-enviar",
+              "referencia/nfe-consulta"
+            ]
           },
           {
             "group": "SEFAZ",
-            "pages": ["referencia/sefaz-enviar"]
+            "pages": [
+              "referencia/sefaz-enviar"
+            ]
           }
+        ]
+      },
+      {
+        "dropdown": "API",
+        "pages": [
+          "nfe/consulta",
+          "nfe/exemplo-lote",
+          "nfe/visao-geral"
         ]
       }
     ]
