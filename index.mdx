@@ -1,88 +1,62 @@
 ---
-title: "Especificações técnicas API"
-description: "Como integrar NFS-e, NF-e e SEFAZ com a API GSF Soluções."
+title: "Bem-vindo à GSF"
+description: "Documentação das APIs GSF Soluções para NF-e, NFS-e, SEFAZ e DC-e."
 ---
 
-<Info>
-**Ambiente de homologação:** `https://hom.portalgsf.com.br` · Prefixo público: `/api/v1/` · Homologação **não** gera documento com valor fiscal.
-</Info>
+A **GSF Soluções** é uma empresa brasileira especializada em tecnologia fiscal e tributária, com mais de 25 anos de experiência em tecnologia e atuação no mercado de software fiscal.
 
-Bem-vindo à documentação técnica da **API GSF Soluções**. Aqui você encontra o que enviar, como autenticar e como consultar o retorno dos documentos fiscais.
+Nossa plataforma oferece soluções para **automação, emissão, integração e gestão de documentos fiscais eletrônicos**, permitindo conectar sistemas empresariais aos processos fiscais de forma segura e eficiente.
 
-## O que você pode integrar
+## Integrações fiscais
 
-<CardGroup cols={3}>
-  <Card title="NFS-e" icon="file-invoice" href="/nfse/visao-geral">
-    Recebimento de notas de serviço em JSON e consulta do retorno.
+Esta documentação apresenta as APIs e recursos disponibilizados pela GSF para integração com sistemas externos, ERPs e aplicações.
+
+Aqui você encontrará informações sobre:
+
+- **NF-e** — emissão e consulta de Nota Fiscal Eletrônica
+- **NFS-e** — emissão e consulta de Nota Fiscal de Serviço Eletrônica
+- **SEFAZ** — comunicação e processos relacionados à autorização de documentos fiscais
+- **DC-e** — emissão e consulta de Declaração de Conteúdo Eletrônica
+- **Documentos fiscais eletrônicos** — geração, processamento e acompanhamento
+- **APIs** — endpoints, autenticação, parâmetros e respostas
+- **API Playground** — ambiente para testar as APIs diretamente
+
+## Como começar
+
+Se você está realizando uma integração pela primeira vez, escolha o produto:
+
+<CardGroup cols={2}>
+  <Card title="Integração Fiscal" icon="file-invoice" href="/integracao">
+    NFS-e, NF-e, SEFAZ e API Playground.
   </Card>
-  <Card title="NF-e" icon="file-code" href="/nfe/visao-geral">
-    Recebimento de documentos em JSON (`Lote`) e consulta do retorno.
-  </Card>
-  <Card title="SEFAZ" icon="building-columns" href="/sefaz/visao-geral">
-    Envio de XML para o fluxo de processamento SEFAZ.
+  <Card title="Emissão DC-e" icon="box-open" href="/dce">
+    Emissão e consulta de Declaração de Conteúdo Eletrônica.
   </Card>
 </CardGroup>
 
-## Base e autenticação
+## APIs
 
-| Item | Valor |
-| --- | --- |
-| BASE (homologação) | `https://hom.portalgsf.com.br` |
-| Prefixo | `/api/v1/` |
-| Trailing slash | Obrigatório (`/nfse/`, `/nfe/`, …) |
-| Auth | `Authorization: JWT <token>` |
-| Content-Type JSON | `application/json; charset=UTF-8` |
-| CNPJ | Somente dígitos — ex.: `22760852000110` |
-| Datas | `DD/MM/AAAA` |
-| País (Brasil) | `1058` |
+As APIs da GSF permitem integrar sistemas externos aos serviços fiscais da plataforma, automatizando o envio e o acompanhamento dos documentos.
 
-<Warning>
-O header de autenticação usa o prefixo **`JWT`**, não `Bearer`.
-</Warning>
+Cada API possui sua própria documentação com:
 
-## Endpoints
+- Endpoint
+- Método HTTP
+- Headers obrigatórios
+- Parâmetros
+- Exemplos de requisição
+- Exemplos de resposta
+- Códigos de retorno
+- Regras específicas de processamento
 
-| Método | Path público | Função |
-| --- | --- | --- |
-| `POST` | `/api/v1/auth/token/` | Obter token |
-| `POST` | `/api/v1/nfse/` | Receber lote NFS-e |
-| `POST` | `/api/v1/nfse/consulta/` | Consultar retorno NFS-e |
-| `POST` | `/api/v1/nfe/` | Receber lote NF-e (JSON) |
-| `POST` | `/api/v1/nfe/consulta/` | Consultar retorno NF-e |
-| `POST` | `/api/v1/nfe/sefaz/` | Enviar XML SEFAZ |
+## Teste as APIs
 
-## Fluxo recomendado
+Utilize o **API Playground** para realizar requisições diretamente pela documentação e validar o comportamento dos endpoints antes de implementar a integração no seu sistema.
 
-<Steps>
-  <Step title="Autentique">
-    Obtenha o JWT em `/api/v1/auth/token/` com o usuário técnico.
-  </Step>
-  <Step title="Envie o documento">
-    Use NFS-e, NF-e ou SEFAZ conforme o tipo de integração.
-  </Step>
-  <Step title="Guarde a correlação">
-    Persista o código de origem (`codigoOrigem` / `idNfErp`) e, na NFS-e, o `nroProtocolo`.
-  </Step>
-  <Step title="Consulte o retorno">
-    Chame `/nfse/consulta/` ou `/nfe/consulta/` com CNPJ + `cod_origem` até obter status final.
-  </Step>
-</Steps>
+> As informações apresentadas nesta documentação podem ser atualizadas conforme mudanças nos serviços, integrações e legislações aplicáveis.
 
-## Códigos HTTP
+---
 
-| HTTP | Significado | O que fazer |
-| --- | --- | --- |
-| `200` | Requisição aceita / retorno disponível | Leia o corpo. Em envios assíncronos, ainda pode ser necessário consultar. |
-| `204` | Consulta sem retorno pronto | Aguarde e consulte novamente. |
-| `400` | Payload inválido | Corrija os campos e reenvie. |
-| `401` | Token inválido ou expirado | Gere um token novo. |
-| `412` | Parâmetro obrigatório nulo | Informe `cnpj` e `cod_origem`. |
-| `500` | Erro interno | Registre o horário e o código de origem; contate o suporte. |
+**GSF Soluções**
 
-<Tip>
-Na aba **Referência**, o Try-it executa contra a homologação. Autentique-se primeiro e use `Authorization: JWT <token>`.
-</Tip>
-
-<Card title="Começar pela autenticação" icon="key" href="/autenticacao">
-Como obter e usar o JWT nas chamadas.
-</Card>
+Tecnologia para simplificar processos fiscais e tributários.

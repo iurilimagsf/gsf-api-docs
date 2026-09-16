@@ -26,7 +26,7 @@
       {
         "tab": "Inicio",
         "pages": [
-          "untitled-page-2"
+          "index"
         ]
       },
       {
@@ -38,7 +38,7 @@
               {
                 "group": "Introdução",
                 "pages": [
-                  "index",
+                  "integracao/index",
                   "autenticacao"
                 ]
               }
@@ -80,14 +80,6 @@
                   "nfse/consulta"
                 ]
               }
-            ]
-          },
-          {
-            "group": "API Specs",
-            "pages": [
-              "nfe/consulta",
-              "nfe/exemplo-lote",
-              "nfe/visao-geral"
             ]
           },
           {
@@ -232,5 +224,15 @@
       "download-spec"
     ],
     "display": "header"
-  }
+  },
+  "redirects": [
+    {
+      "source": "/untitled-page-2",
+      "destination": "/"
+    },
+    {
+      "source": "/comecar",
+      "destination": "/integracao"
+    }
+  ]
 }
