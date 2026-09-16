@@ -1,0 +1,623 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "GSF Soluções — Emissão DC-e",
+    "version": "1.0.0",
+    "description": "Declaração de Conteúdo Eletrônica (DC-e).\n\nBase: `https://hom.portalgsf.com.br` · Prefixo: `/api-boss/`"
+  },
+  "servers": [
+    {
+      "url": "https://hom.portalgsf.com.br",
+      "description": "Homologação GSF"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Autenticacao",
+      "description": "Emissão do token JWT."
+    },
+    {
+      "name": "DCe",
+      "description": "Emissão e consulta de DC-e."
+    }
+  ],
+  "paths": {
+    "/api-boss/api-token-auth/": {
+      "post": {
+        "tags": [
+          "Autenticacao"
+        ],
+        "summary": "Obter token JWT (DC-e)",
+        "description": "Retorna JWT. Header: `Authorization: JWT <token>` (não Bearer).",
+        "operationId": "obterTokenDce",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRequest"
+              },
+              "example": {
+                "username": "<usuario_integracao>",
+                "password": "<senha>"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token emitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                },
+                "example": {
+                  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Credenciais inválidas"
+          }
+        }
+      }
+    },
+    "/api-boss/v01/emissaoDCe/": {
+      "post": {
+        "tags": [
+          "DCe"
+        ],
+        "summary": "DC-e — Emitir",
+        "description": "Body: objeto JSON (`capa`, `emit`, `dest`, `det`, …). Resposta: `chave_dce` + `id_docfis`.",
+        "operationId": "emitirDce",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmissaoDceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Aceite para processamento",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmissaoDceResponse"
+                },
+                "example": {
+                  "ok": true,
+                  "id_docfis": 67,
+                  "chave_dce": "35260502735565000142990010000000751300000676",
+                  "numero": 75,
+                  "serie": "1",
+                  "cod_retorno": null,
+                  "desc_retorno": ""
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Payload inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "ok": false,
+                  "error": "CNPJ do emitente não informado."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido"
+          }
+        }
+      }
+    },
+    "/api-boss/v01/consultaDCe/": {
+      "post": {
+        "tags": [
+          "DCe"
+        ],
+        "summary": "DC-e — Consultar retorno",
+        "description": "Body: `chave_dce` (= valor devolvido na emissão).",
+        "operationId": "consultarDce",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsultaDceRequest"
+              },
+              "example": {
+                "chave_dce": "35260502735565000142990010000000751300000676"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Retorno disponível (processando, autorizado ou erro)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsultaDceResponse"
+                },
+                "example": {
+                  "ok": true,
+                  "chave_dce": "35260502735565000142990010000000751300000676",
+                  "id_docfis": 67,
+                  "situacao": "Em Processamento",
+                  "cod_retorno": null,
+                  "desc_retorno": "DC-e em processamento",
+                  "xml_base64": null,
+                  "pdf_base64": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Parâmetro inválido"
+          },
+          "401": {
+            "description": "Token inválido"
+          },
+          "404": {
+            "description": "DC-e não encontrada",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "chave_dce": "35260502735565000142990010000000751300000676",
+                  "situacao": "NAO_ENCONTRADO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "DCe"
+        ],
+        "summary": "DC-e — Consultar retorno (GET)",
+        "description": "Query: `chave_dce`.",
+        "operationId": "consultarDceGet",
+        "parameters": [
+          {
+            "name": "chave_dce",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "35260502735565000142990010000000751300000676"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retorno disponível"
+          },
+          "401": {
+            "description": "Token inválido"
+          },
+          "404": {
+            "description": "DC-e não encontrada"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "jwtAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "JWT <token> (prefixo JWT, não Bearer)."
+      }
+    },
+    "schemas": {
+      "TokenRequest": {
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "format": "password"
+          }
+        }
+      },
+      "TokenResponse": {
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "ConsultaDceRequest": {
+        "type": "object",
+        "required": [
+          "chave_dce"
+        ],
+        "properties": {
+          "chave_dce": {
+            "type": "string",
+            "example": "35260502735565000142990010000000751300000676"
+          }
+        }
+      },
+      "ConsultaDceResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "chave_dce": {
+            "type": "string"
+          },
+          "id_docfis": {
+            "type": "integer"
+          },
+          "situacao": {
+            "type": "string"
+          },
+          "cod_retorno": {
+            "type": "integer",
+            "nullable": true
+          },
+          "desc_retorno": {
+            "type": "string"
+          },
+          "xml_base64": {
+            "type": "string",
+            "nullable": true
+          },
+          "pdf_base64": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "EmissaoDceResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "id_docfis": {
+            "type": "integer"
+          },
+          "chave_dce": {
+            "type": "string"
+          },
+          "numero": {
+            "type": "integer"
+          },
+          "serie": {
+            "type": "string"
+          },
+          "cod_retorno": {
+            "type": "integer",
+            "nullable": true
+          },
+          "desc_retorno": {
+            "type": "string"
+          }
+        }
+      },
+      "EmissaoDceRequest": {
+        "type": "object",
+        "required": [
+          "capa",
+          "emit",
+          "dest",
+          "det",
+          "transp"
+        ],
+        "properties": {
+          "capa": {
+            "type": "object",
+            "properties": {
+              "serie": {
+                "type": "integer",
+                "example": 1
+              },
+              "nDC": {
+                "type": "integer",
+                "example": 73
+              },
+              "tpEmit": {
+                "type": "integer",
+                "description": "0 Fisco · 1 Marketplace · 2 Emissor próprio · 3 Transportadora",
+                "example": 3
+              }
+            }
+          },
+          "emit": {
+            "type": "object",
+            "required": [
+              "CNPJ"
+            ],
+            "properties": {
+              "CNPJ": {
+                "type": "string",
+                "example": "22760852000110"
+              }
+            }
+          },
+          "transportadora": {
+            "type": "object",
+            "properties": {
+              "CNPJ": {
+                "type": "string",
+                "example": "22760852000110"
+              },
+              "xNome": {
+                "type": "string",
+                "example": "GSF SOLUCOES LTDA"
+              }
+            }
+          },
+          "dest": {
+            "type": "object",
+            "properties": {
+              "CNPJ": {
+                "type": "string",
+                "nullable": true,
+                "example": "22760852000110"
+              },
+              "CPF": {
+                "type": "string",
+                "nullable": true
+              },
+              "xNome": {
+                "type": "string",
+                "example": "GSF SOLUCOES LTDA"
+              },
+              "email": {
+                "type": "string",
+                "example": "integracao@gsfsolucoes.com.br"
+              },
+              "enderDest": {
+                "$ref": "#/components/schemas/EnderDest"
+              }
+            }
+          },
+          "det": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/ItemDce"
+            }
+          },
+          "total": {
+            "type": "object",
+            "properties": {
+              "vDC": {
+                "type": "string",
+                "example": "1050.00"
+              }
+            }
+          },
+          "transp": {
+            "type": "object",
+            "properties": {
+              "modTrans": {
+                "type": "integer",
+                "description": "0 Correios · 1 Conta própria · 2 Empresa transportadora",
+                "example": 2
+              },
+              "CNPJTransp": {
+                "type": "string",
+                "example": "22760852000110"
+              }
+            }
+          },
+          "infAdic": {
+            "type": "object",
+            "properties": {
+              "infAdFisco": {
+                "type": "string",
+                "nullable": true
+              },
+              "infCpl": {
+                "type": "string",
+                "example": "Envio para Evento"
+              }
+            }
+          }
+        },
+        "example": {
+          "capa": {
+            "serie": 1,
+            "nDC": 73,
+            "tpEmit": 3
+          },
+          "emit": {
+            "CNPJ": "22760852000110"
+          },
+          "transportadora": {
+            "CNPJ": "22760852000110",
+            "xNome": "GSF SOLUCOES LTDA"
+          },
+          "dest": {
+            "CNPJ": "22760852000110",
+            "CPF": null,
+            "xNome": "GSF SOLUCOES LTDA",
+            "enderDest": {
+              "xLgr": "PAULISTA",
+              "nro": "1000",
+              "xCpl": "CJ 101",
+              "xBairro": "BELA VISTA",
+              "cMun": "3550308",
+              "xMun": "SAO PAULO",
+              "UF": "SP",
+              "CEP": "01310100",
+              "cPais": "1058",
+              "xPais": "Brasil",
+              "fone": "1130000000"
+            },
+            "email": "integracao@gsfsolucoes.com.br"
+          },
+          "det": [
+            {
+              "nItem": 1,
+              "prod": {
+                "xProd": "Maquina de cafe",
+                "NCM": null,
+                "qCom": "1.0000",
+                "vUnCom": "1000.00",
+                "vProd": "1000.00",
+                "uCom": "UN"
+              },
+              "infAdProd": null
+            },
+            {
+              "nItem": 2,
+              "prod": {
+                "xProd": "Filtro de papel para cafe",
+                "NCM": null,
+                "qCom": "5.0000",
+                "vUnCom": "10.00",
+                "vProd": "50.00",
+                "uCom": "UN"
+              },
+              "infAdProd": "Pacote com 100 unidades cada"
+            }
+          ],
+          "total": {
+            "vDC": "1050.00"
+          },
+          "transp": {
+            "modTrans": 2,
+            "CNPJTransp": "22760852000110"
+          },
+          "infAdic": {
+            "infAdFisco": null,
+            "infCpl": "Envio para Evento"
+          }
+        }
+      },
+      "EnderDest": {
+        "type": "object",
+        "properties": {
+          "xLgr": {
+            "type": "string"
+          },
+          "nro": {
+            "type": "string"
+          },
+          "xCpl": {
+            "type": "string",
+            "nullable": true
+          },
+          "xBairro": {
+            "type": "string"
+          },
+          "cMun": {
+            "type": "string"
+          },
+          "xMun": {
+            "type": "string"
+          },
+          "UF": {
+            "type": "string"
+          },
+          "CEP": {
+            "type": "string"
+          },
+          "cPais": {
+            "type": "string",
+            "example": "1058"
+          },
+          "xPais": {
+            "type": "string",
+            "example": "Brasil"
+          },
+          "fone": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ItemDce": {
+        "type": "object",
+        "properties": {
+          "nItem": {
+            "type": "integer"
+          },
+          "prod": {
+            "type": "object",
+            "properties": {
+              "xProd": {
+                "type": "string"
+              },
+              "NCM": {
+                "type": "string",
+                "nullable": true
+              },
+              "qCom": {
+                "type": "string"
+              },
+              "vUnCom": {
+                "type": "string"
+              },
+              "vProd": {
+                "type": "string"
+              },
+              "uCom": {
+                "type": "string",
+                "example": "UN"
+              }
+            }
+          },
+          "infAdProd": {
+            "type": "string",
+            "nullable": true
+          },
+          "infCpl": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "jwtAuth": []
+    }
+  ]
+}

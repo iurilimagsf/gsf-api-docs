@@ -1,0 +1,119 @@
+---
+title: "DC-e — consulta"
+description: "Consulta do retorno da DC-e pela chave devolvida na emissão."
+---
+
+Após o envio, consulte o processamento com a `chave_dce` retornada em `/api-boss/v01/emissaoDCe/`.
+
+## Endpoint
+
+```http
+POST /api-boss/v01/consultaDCe/
+Authorization: JWT <token>
+Content-Type: application/json
+```
+
+Homologação: `https://hom.portalgsf.com.br/api-boss/v01/consultaDCe/` · Produção: conforme o ambiente do cliente.
+
+Também é aceito `GET /api-boss/v01/consultaDCe/?chave_dce=...`.
+
+## Request
+
+| Campo | Tipo | Obrig. | Descrição |
+| --- | --- | --- | --- |
+| `chave_dce` | string | Sim | Mesmo valor devolvido na emissão. Somente dígitos |
+
+```json
+{
+  "chave_dce": "35260502735565000142990010000000751300000676"
+}
+```
+
+## Respostas
+
+### `200` — em processamento
+
+```json
+{
+  "ok": true,
+  "chave_dce": "35260502735565000142990010000000751300000676",
+  "id_docfis": 67,
+  "situacao": "Em Processamento",
+  "cod_retorno": null,
+  "desc_retorno": "DC-e em processamento",
+  "xml_base64": null,
+  "pdf_base64": null
+}
+```
+
+Aguarde e consulte novamente. **Não reenvie** a DC-e só porque a consulta ainda está em processamento.
+
+### `200` — autorizado
+
+```json
+{
+  "ok": true,
+  "chave_dce": "35260502735565000142990010000000751300000676",
+  "id_docfis": 67,
+  "situacao": "AUTORIZADO",
+  "cod_retorno": 100,
+  "desc_retorno": "Autorizado",
+  "xml_base64": "...",
+  "pdf_base64": "..."
+}
+```
+
+`cod_retorno` `100` = autorizado · `101` = cancelado. Em ambos os casos a API devolve XML e PDF em Base64.
+
+### `200` — erro fiscal
+
+```json
+{
+  "ok": false,
+  "chave_dce": "35260502735565000142990010000000751300000676",
+  "id_docfis": 67,
+  "situacao": "ERRO",
+  "cod_retorno": 400,
+  "desc_retorno": "...",
+  "xml_base64": "...",
+  "pdf_base64": null
+}
+```
+
+Leia `desc_retorno`, corrija e só então reenvie.
+
+### `404` — não encontrada
+
+```json
+{
+  "ok": false,
+  "chave_dce": "35260502735565000142990010000000751300000676",
+  "situacao": "NAO_ENCONTRADO"
+}
+```
+
+### Situação — o que fazer
+
+| `situacao` / `cod_retorno` | Ação |
+| --- | --- |
+| `Em Processamento` / `null` | Continuar o polling |
+| `AUTORIZADO` / `100` | Persistir XML e PDF (Base64) |
+| `AUTORIZADO` / `101` | Tratar cancelamento; XML e PDF disponíveis |
+| `ERRO` | Ler `desc_retorno`, corrigir e só então reenviar |
+| `NAO_ENCONTRADO` | Conferir a `chave_dce` |
+
+## cURL
+
+```bash
+curl --request POST \
+  --url https://hom.portalgsf.com.br/api-boss/v01/consultaDCe/ \
+  --header 'Authorization: JWT <token>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "chave_dce": "35260502735565000142990010000000751300000676"
+  }'
+```
+
+<Tip>
+A correlação da DC-e é a `chave_dce`, não o par CNPJ + `cod_origem` usado na Integração Fiscal.
+</Tip>

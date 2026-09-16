@@ -1,0 +1,133 @@
+---
+title: "DC-e — catálogo de campos"
+description: "Atributos do JSON de emissão da Declaração de Conteúdo Eletrônica."
+---
+
+O body de `POST /api-boss/v01/emissaoDCe/` é um **objeto** JSON (não é array e não usa a chave `Lote`).
+
+## Raiz
+
+| Atributo | Descrição | Tipo | Obrig. | Instrução |
+| --- | --- | --- | --- | --- |
+| `capa` | Cabeçalho da DC-e | Objeto | Sim | `serie`, `nDC`, `tpEmit` |
+| `emit` | Emitente | Objeto | Sim | Somente `CNPJ` |
+| `transportadora` | Transportadora | Objeto | Condicional | Obrigatório quando `tpEmit = 3` |
+| `dest` | Destinatário | Objeto | Sim | CNPJ **ou** CPF |
+| `det` | Itens | Array | Sim | Mínimo 1 |
+| `total` | Totais | Objeto | Não | `vDC` |
+| `transp` | Transporte | Objeto | Sim | `modTrans` e CNPJ do transportador |
+| `infAdic` | Informações adicionais | Objeto | Não | `infCpl` / `infAdFisco` |
+
+## Capa (`capa`)
+
+| Atributo | Descrição | Tipo | Obrig. | Instrução |
+| --- | --- | --- | --- | --- |
+| `serie` | Série | Numérico / Text | Sim | Default `1` se omitido |
+| `nDC` | Número da DC-e | Numérico | Sim | Número no sistema origem |
+| `tpEmit` | Tipo de emitente | Numérico | Sim | `0` Fisco · `1` Marketplace · `2` Emissor próprio · `3` Transportadora |
+
+Quando `tpEmit = 3`, o estabelecimento GSF é resolvido pelo **CNPJ do transportador**. Nos demais valores, pelo **CNPJ do emitente**. O CNPJ precisa estar cadastrado no GSF.
+
+## Emitente (`emit`)
+
+| Atributo | Descrição | Tipo | Obrig. | Instrução |
+| --- | --- | --- | --- | --- |
+| `CNPJ` | CNPJ do emitente | Text | Sim | Somente dígitos. CPF **não** é aceito |
+
+## Transportadora (`transportadora`)
+
+| Atributo | Descrição | Tipo | Obrig. | Instrução |
+| --- | --- | --- | --- | --- |
+| `CNPJ` | CNPJ da transportadora | Text | Condicional | Obrigatório se `transp.CNPJTransp` estiver vazio |
+| `xNome` | Razão social | Text | Não | Nome da transportadora |
+
+Grupo de escolha do `tpEmit`: Fisco / Marketplace / Emissor próprio / Transportadora.
+
+## Destinatário (`dest`)
+
+| Atributo | Descrição | Tipo | Obrig. | Instrução |
+| --- | --- | --- | --- | --- |
+| `CNPJ` | CNPJ | Text | Condicional | Informe CNPJ **ou** CPF, nunca os dois |
+| `CPF` | CPF | Text | Condicional | Use `null` quando o destinatário for PJ |
+| `xNome` | Nome / razão social | Text | Sim | |
+| `enderDest` | Endereço | Objeto | Sim | Ver tabela abaixo |
+| `email` | E-mail | Text | Não | |
+
+### Endereço (`dest.enderDest`)
+
+| Atributo | Descrição | Tipo | Obrig. | Instrução |
+| --- | --- | --- | --- | --- |
+| `xLgr` | Logradouro | Text | Sim | Sem tipo abreviado obrigatório |
+| `nro` | Número | Text | Sim | |
+| `xCpl` | Complemento | Text | Não | Aceita `null` / `""` |
+| `xBairro` | Bairro | Text | Sim | |
+| `cMun` | Município | Text | Sim | IBGE 7 dígitos |
+| `xMun` | Nome do município | Text | Sim | |
+| `UF` | UF | Text | Sim | Ex.: `SP` |
+| `CEP` | CEP | Text | Sim | Somente dígitos |
+| `cPais` | País | Text | Sim | Brasil = `1058` |
+| `xPais` | Nome do país | Text | Sim | Ex.: `Brasil` |
+| `fone` | Telefone | Text | Não | Aceita `null` |
+
+## Itens (`det[]`)
+
+| Atributo | Descrição | Tipo | Obrig. | Instrução |
+| --- | --- | --- | --- | --- |
+| `nItem` | Sequência | Numérico | Sim | Inicia em `1` |
+| `prod` | Produto | Objeto | Sim | |
+| `infAdProd` | Inf. adicional do item | Text | Não | Aceita `null` |
+| `infCpl` | Inf. complementar do item | Text | Não | Tem prioridade sobre `infAdic.infCpl` |
+
+### Produto (`det[].prod`)
+
+| Atributo | Descrição | Tipo | Obrig. | Instrução |
+| --- | --- | --- | --- | --- |
+| `xProd` | Descrição | Text | Sim | |
+| `NCM` | NCM | Text | Não | Aceita `null` |
+| `qCom` | Quantidade | Decimal | Sim | Use ponto decimal |
+| `vUnCom` | Valor unitário | Decimal | Sim | |
+| `vProd` | Valor total do item | Decimal | Sim | Se omitido, a API calcula `qCom * vUnCom` |
+| `uCom` | Unidade | Text | Não | Default `UN` (`unid` também é aceito) |
+
+## Totais (`total`)
+
+| Atributo | Descrição | Tipo | Obrig. | Instrução |
+| --- | --- | --- | --- | --- |
+| `vDC` | Valor total da DC-e | Decimal | Não | Soma dos itens |
+
+## Transporte (`transp`)
+
+| Atributo | Descrição | Tipo | Obrig. | Instrução |
+| --- | --- | --- | --- | --- |
+| `modTrans` | Modalidade | Numérico | Sim | `0` Correios · `1` Conta própria · `2` Empresa transportadora |
+| `CNPJTransp` | CNPJ do transportador | Text | Condicional | Obrigatório se `transportadora.CNPJ` estiver vazio |
+
+## Informações adicionais (`infAdic`)
+
+| Atributo | Descrição | Tipo | Obrig. | Instrução |
+| --- | --- | --- | --- | --- |
+| `infAdFisco` | Informação ao fisco | Text | Não | Aceita `null`. Usada no item se `infAdProd` estiver vazio |
+| `infCpl` | Informação complementar | Text | Não | Gravada no **primeiro item** se o item não tiver `infCpl` próprio |
+
+## Consulta (`POST /api-boss/v01/consultaDCe/`)
+
+| Atributo | Descrição | Tipo | Obrig. | Instrução |
+| --- | --- | --- | --- | --- |
+| `chave_dce` | Chave da DC-e | Text | Sim | Mesmo valor devolvido na emissão. Somente dígitos |
+
+### Retorno da consulta
+
+| Atributo | Descrição |
+| --- | --- |
+| `ok` | `true` em processamento ou autorizado; `false` em erro / não encontrado |
+| `chave_dce` | Chave consultada |
+| `id_docfis` | Identificador interno GSF |
+| `situacao` | `Em Processamento` · `AUTORIZADO` · `ERRO` · `NAO_ENCONTRADO` |
+| `cod_retorno` | `null` processando · `100` autorizado · `101` cancelado · demais = erro |
+| `desc_retorno` | Mensagem |
+| `xml_base64` | XML em Base64 quando houver |
+| `pdf_base64` | PDF em Base64 quando autorizado |
+
+<Note>
+CNPJ e CPF são validados (dígitos verificadores). Documentos inválidos ou emitente/transportador sem estabelecimento cadastrado retornam HTTP `400` com `error`.
+</Note>

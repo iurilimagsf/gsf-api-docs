@@ -1,0 +1,81 @@
+---
+title: "Especificações técnicas DC-e"
+description: "Como emitir e consultar Declaração de Conteúdo Eletrônica (DC-e) na API GSF Soluções."
+---
+
+<Info>
+**Ambiente de homologação:** `https://hom.portalgsf.com.br` · Prefixo: `/api-boss/` · Homologação **não** gera documento com valor fiscal.
+</Info>
+
+Bem-vindo à documentação de **emissão de DC-e**. Aqui você encontra o JSON de integração, a autenticação JWT e a consulta do retorno.
+
+## O que você pode integrar
+
+<CardGroup cols={2}>
+  <Card title="Emissão" icon="file-invoice" href="/dce/visao-geral">
+    Envio do JSON da DC-e e obtenção da `chave_dce`.
+  </Card>
+  <Card title="Consulta" icon="magnifying-glass" href="/dce/consulta">
+    Acompanhamento da situação, XML e PDF em Base64.
+  </Card>
+</CardGroup>
+
+## Base e autenticação
+
+| Item | Valor |
+| --- | --- |
+| BASE (homologação) | `https://hom.portalgsf.com.br` |
+| Prefixo | `/api-boss/` |
+| Trailing slash | Obrigatório |
+| Auth | `Authorization: JWT <token>` |
+| Content-Type JSON | `application/json; charset=UTF-8` |
+| CNPJ / CPF | Somente dígitos — ex.: `22760852000110` |
+| País (Brasil) | `1058` |
+| Produção | Conforme o ambiente do cliente |
+
+<Warning>
+O header de autenticação usa o prefixo **`JWT`**, não `Bearer`.
+</Warning>
+
+## Endpoints
+
+| Método | Path | Função |
+| --- | --- | --- |
+| `POST` | `/api-boss/api-token-auth/` | Obter token |
+| `POST` | `/api-boss/v01/emissaoDCe/` | Emitir DC-e |
+| `POST` | `/api-boss/v01/consultaDCe/` | Consultar retorno da DC-e |
+| `GET` | `/api-boss/v01/consultaDCe/?chave_dce=` | Consulta alternativa por query string |
+
+## Fluxo recomendado
+
+<Steps>
+  <Step title="Autentique">
+    Obtenha o JWT em `/api-boss/api-token-auth/` com o usuário técnico.
+  </Step>
+  <Step title="Envie a DC-e">
+    Chame `/api-boss/v01/emissaoDCe/` com o JSON de capa, emitente, destinatário, itens e transporte.
+  </Step>
+  <Step title="Guarde a correlação">
+    Persista `chave_dce` e `id_docfis` retornados no aceite.
+  </Step>
+  <Step title="Consulte o retorno">
+    Chame `/api-boss/v01/consultaDCe/` com a `chave_dce` até `situacao` = `AUTORIZADO` (ou tratamento de erro).
+  </Step>
+</Steps>
+
+## Códigos HTTP
+
+| HTTP | Significado | O que fazer |
+| --- | --- | --- |
+| `200` | Requisição aceita / retorno disponível | Leia `ok`, `situacao` e `cod_retorno`. A autorização fiscal só existe na consulta. |
+| `400` | Payload inválido | Corrija os campos (`error`) e reenvie. |
+| `401` | Token inválido ou expirado | Gere um token novo. |
+| `404` | DC-e não encontrada | Confira a `chave_dce`. |
+
+<Tip>
+Na aba **API Playground**, o Try-it executa contra a homologação. Autentique-se primeiro e use `Authorization: JWT <token>`.
+</Tip>
+
+<Card title="Começar pela autenticação" icon="key" href="/dce/autenticacao">
+Como obter e usar o JWT nas chamadas de DC-e.
+</Card>

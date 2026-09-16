@@ -1,0 +1,105 @@
+---
+title: "DC-e — exemplo de JSON"
+description: "Payload de emissão de DC-e com dados da GSF Soluções."
+---
+
+Exemplo para `POST /api-boss/v01/emissaoDCe/`, com emitente, transportadora e destinatário **GSF Soluções** (`22760852000110`) e `tpEmit: 3`.
+
+<Warning>
+Valores de homologação — sem efeito fiscal. Os CNPJs precisam estar cadastrados no GSF.
+</Warning>
+
+```json
+{
+  "capa": {
+    "serie": 1,
+    "nDC": 73,
+    "tpEmit": 3
+  },
+  "emit": {
+    "CNPJ": "22760852000110"
+  },
+  "transportadora": {
+    "CNPJ": "22760852000110",
+    "xNome": "GSF SOLUCOES LTDA"
+  },
+  "dest": {
+    "CNPJ": "22760852000110",
+    "CPF": null,
+    "xNome": "GSF SOLUCOES LTDA",
+    "enderDest": {
+      "xLgr": "PAULISTA",
+      "nro": "1000",
+      "xCpl": "CJ 101",
+      "xBairro": "BELA VISTA",
+      "cMun": "3550308",
+      "xMun": "SAO PAULO",
+      "UF": "SP",
+      "CEP": "01310100",
+      "cPais": "1058",
+      "xPais": "Brasil",
+      "fone": "1130000000"
+    },
+    "email": "integracao@gsfsolucoes.com.br"
+  },
+  "det": [
+    {
+      "nItem": 1,
+      "prod": {
+        "xProd": "Maquina de cafe",
+        "NCM": null,
+        "qCom": "1.0000",
+        "vUnCom": "1000.00",
+        "vProd": "1000.00",
+        "uCom": "UN"
+      },
+      "infAdProd": null
+    },
+    {
+      "nItem": 2,
+      "prod": {
+        "xProd": "Filtro de papel para cafe",
+        "NCM": null,
+        "qCom": "5.0000",
+        "vUnCom": "10.00",
+        "vProd": "50.00",
+        "uCom": "UN"
+      },
+      "infAdProd": "Pacote com 100 unidades cada"
+    }
+  ],
+  "total": {
+    "vDC": "1050.00"
+  },
+  "transp": {
+    "modTrans": 2,
+    "CNPJTransp": "22760852000110"
+  },
+  "infAdic": {
+    "infAdFisco": null,
+    "infCpl": "Envio para Evento"
+  }
+}
+```
+
+Arquivo: [`examples/dce-emissao.json`](/examples/dce-emissao.json)
+
+## cURL
+
+```bash
+curl --request POST \
+  --url https://hom.portalgsf.com.br/api-boss/v01/emissaoDCe/ \
+  --header 'Authorization: JWT <token>' \
+  --header 'Content-Type: application/json' \
+  --data @examples/dce-emissao.json
+```
+
+## Checklist
+
+<Check>Header `Authorization: JWT …`</Check>
+<Check>Body é um **objeto** (não use `Lote` nem array raiz)</Check>
+<Check>`emit.CNPJ` válido, somente dígitos</Check>
+<Check>`det` com pelo menos um item (`xProd`, `qCom`, `vUnCom`)</Check>
+<Check>Destinatário com CNPJ **ou** CPF (não os dois)</Check>
+<Check>`tpEmit = 3` exige CNPJ da transportadora</Check>
+<Check>Após o envio, consultar com a mesma `chave_dce` em `/api-boss/v01/consultaDCe/`</Check>

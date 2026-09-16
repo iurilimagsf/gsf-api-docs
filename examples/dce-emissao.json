@@ -1,0 +1,70 @@
+{
+  "capa": {
+    "serie": 1,
+    "nDC": 73,
+    "tpEmit": 3
+  },
+  "emit": {
+    "CNPJ": "22760852000110"
+  },
+  "transportadora": {
+    "CNPJ": "22760852000110",
+    "xNome": "GSF SOLUCOES LTDA"
+  },
+  "dest": {
+    "CNPJ": "22760852000110",
+    "CPF": null,
+    "xNome": "GSF SOLUCOES LTDA",
+    "enderDest": {
+      "xLgr": "PAULISTA",
+      "nro": "1000",
+      "xCpl": "CJ 101",
+      "xBairro": "BELA VISTA",
+      "cMun": "3550308",
+      "xMun": "SAO PAULO",
+      "UF": "SP",
+      "CEP": "01310100",
+      "cPais": "1058",
+      "xPais": "Brasil",
+      "fone": "1130000000"
+    },
+    "email": "integracao@gsfsolucoes.com.br"
+  },
+  "det": [
+    {
+      "nItem": 1,
+      "prod": {
+        "xProd": "Maquina de cafe",
+        "NCM": null,
+        "qCom": "1.0000",
+        "vUnCom": "1000.00",
+        "vProd": "1000.00",
+        "uCom": "UN"
+      },
+      "infAdProd": null
+    },
+    {
+      "nItem": 2,
+      "prod": {
+        "xProd": "Filtro de papel para cafe",
+        "NCM": null,
+        "qCom": "5.0000",
+        "vUnCom": "10.00",
+        "vProd": "50.00",
+        "uCom": "UN"
+      },
+      "infAdProd": "Pacote com 100 unidades cada"
+    }
+  ],
+  "total": {
+    "vDC": "1050.00"
+  },
+  "transp": {
+    "modTrans": 2,
+    "CNPJTransp": "22760852000110"
+  },
+  "infAdic": {
+    "infAdFisco": null,
+    "infCpl": "Envio para Evento"
+  }
+}

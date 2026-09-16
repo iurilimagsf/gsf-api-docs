@@ -1,0 +1,111 @@
+---
+title: "DC-e — visão geral"
+description: "Emissão da Declaração de Conteúdo Eletrônica em JSON e consulta do retorno."
+---
+
+Envie a DC-e em JSON e consulte o processamento pela `chave_dce` devolvida no aceite.
+
+## Endpoints
+
+| Operação | Path | Sucesso |
+| --- | --- | --- |
+| Emitir | `POST /api-boss/v01/emissaoDCe/` | `{ "ok": true, "chave_dce": "...", "id_docfis": ... }` |
+| Consultar retorno | `POST /api-boss/v01/consultaDCe/` | Situação + XML/PDF em Base64 quando autorizado |
+
+<Warning>
+`200` no envio indica que a DC-e foi **aceita para processamento**. A autorização só existe na consulta, com `situacao` = `AUTORIZADO` e `cod_retorno` `100` (ou `101` se cancelada).
+</Warning>
+
+## Emitir
+
+```http
+POST /api-boss/v01/emissaoDCe/
+Authorization: JWT <token>
+Content-Type: application/json
+```
+
+Homologação: `https://hom.portalgsf.com.br/api-boss/v01/emissaoDCe/` · Produção: conforme o ambiente do cliente.
+
+### Estrutura
+
+```json
+{
+  "capa": {},
+  "emit": {},
+  "transportadora": {},
+  "dest": {},
+  "det": [],
+  "total": {},
+  "transp": {},
+  "infAdic": {}
+}
+```
+
+| Regra | Detalhe |
+| --- | --- |
+| Itens | `det` com no mínimo 1 elemento |
+| Emitente | `emit.CNPJ` válido (CPF do emitente **não** é aceito) |
+| Transportador | `transp.CNPJTransp` ou `transportadora.CNPJ` válido |
+| Destinatário | Informe **somente um**: `dest.CNPJ` **ou** `dest.CPF` |
+| `tpEmit` | `3` = transportadora — o estabelecimento é resolvido pelo CNPJ do transportador |
+| CNPJ / CPF | Somente dígitos; máscara é ignorada |
+
+### Resposta `200` (exemplo)
+
+```json
+{
+  "ok": true,
+  "id_docfis": 67,
+  "chave_dce": "35260502735565000142990010000000751300000676",
+  "numero": 75,
+  "serie": "1",
+  "cod_retorno": null,
+  "desc_retorno": ""
+}
+```
+
+Guarde `chave_dce` e `id_docfis`. `cod_retorno` nulo no aceite é esperado — a autorização vem na consulta.
+
+### Resposta `400`
+
+```json
+{
+  "ok": false,
+  "error": "CNPJ do emitente não informado."
+}
+```
+
+## Consultar retorno
+
+`POST /api-boss/v01/consultaDCe/` com `chave_dce` (mesmo valor do aceite).
+
+Detalhes em [Consulta DC-e](/dce/consulta).
+
+## Grupos principais do payload
+
+<AccordionGroup>
+  <Accordion title="capa">
+    Cabeçalho: `serie`, `nDC` (número) e `tpEmit` (`0` Fisco · `1` Marketplace · `2` Emissor próprio · `3` Transportadora).
+  </Accordion>
+  <Accordion title="emit">
+    Emitente: `CNPJ` obrigatório e válido. Não envie CPF no emitente.
+  </Accordion>
+  <Accordion title="transportadora / transp">
+    Transportador em `transportadora.CNPJ` (e `xNome` quando houver) e modalidade em `transp.modTrans` (`0` Correios · `1` Conta própria · `2` Empresa transportadora). `transp.CNPJTransp` pode repetir o CNPJ. Obrigatório quando `tpEmit = 3`.
+  </Accordion>
+  <Accordion title="dest">
+    Destinatário: `CNPJ` **ou** `CPF`, `xNome`, `email` e endereço em `enderDest` (município IBGE em `cMun`, país `1058`).
+  </Accordion>
+  <Accordion title="det[] / prod">
+    Itens da declaração: `nItem`, `prod.xProd`, `qCom`, `vUnCom`, `vProd`, `uCom` (padrão `UN` se omitido) e `infAdProd` quando houver.
+  </Accordion>
+</AccordionGroup>
+
+<CardGroup cols={2}>
+  <Card title="Catálogo de campos" icon="table" href="/dce/campos">
+    Atributos, tipos e obrigatoriedade.
+  </Card>
+  <Card title="Exemplo de JSON" icon="code" href="/dce/exemplo">
+    Payload completo com dados GSF Soluções.
+  </Card>
+</CardGroup>

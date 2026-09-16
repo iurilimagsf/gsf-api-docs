@@ -2,7 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "GSF Soluções API",
-  "description": "Especificações técnicas da API GSF Soluções para NFS-e, NF-e e SEFAZ.",
+  "description": "Especificações técnicas da API GSF Soluções para NFS-e, NF-e, SEFAZ e DC-e.",
   "colors": {
     "primary": "#91BA2E",
     "light": "#91BA2E",
@@ -124,12 +124,50 @@
         ]
       },
       {
-        "tab": "Emissao DC-e",
+        "tab": "Emissão DC-e",
         "groups": [
           {
             "group": "Começar",
             "pages": [
-              "untitled-page"
+              {
+                "group": "Introdução",
+                "pages": [
+                  "dce/index",
+                  "dce/autenticacao"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "DC-e",
+            "pages": [
+              {
+                "group": "Emissão",
+                "pages": [
+                  "dce/visao-geral",
+                  "dce/campos",
+                  "dce/exemplo",
+                  "dce/consulta"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "API Playground",
+            "pages": [
+              {
+                "group": "Autenticação",
+                "pages": [
+                  "referencia/dce-auth-token"
+                ]
+              },
+              {
+                "group": "DC-e",
+                "pages": [
+                  "referencia/dce-emissao",
+                  "referencia/dce-consulta"
+                ]
+              }
             ]
           }
         ]
