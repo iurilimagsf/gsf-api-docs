@@ -13,100 +13,125 @@
     "dark": "/images/logo.png",
     "href": "/"
   },
-  "favicon": "/images/logo.png",
+  "favicon": {
+    "light": "/images/GSF-Solucoes-Favicon.png",
+    "dark": "/images/logo.png"
+  },
   "font": {
     "headings": "Source Sans 3",
     "body": "Source Sans 3"
   },
   "navigation": {
-    "dropdowns": [
+    "tabs": [
       {
-        "dropdown": "Começar",
-        "groups": [
-          {
-            "group": "Introdução",
-            "pages": [
-              "index",
-              "autenticacao"
-            ]
-          }
+        "tab": "Inicio",
+        "pages": [
+          "untitled-page-2"
         ]
       },
       {
-        "dropdown": "NFS-e",
+        "tab": "Integração Fiscal",
         "groups": [
           {
-            "group": "Recebimento",
+            "group": "Começar",
             "pages": [
-              "nfse/visao-geral",
-              "nfse/campos",
-              "nfse/exemplo-lote",
-              "nfse/consulta"
-            ]
-          }
-        ]
-      },
-      {
-        "dropdown": "NF-e",
-        "groups": [
-          {
-            "group": "Recebimento",
-            "pages": [
-              "nfe/visao-geral",
-              "nfe/exemplo-lote",
-              "nfe/consulta"
-            ]
-          }
-        ]
-      },
-      {
-        "dropdown": "SEFAZ",
-        "groups": [
-          {
-            "group": "Envio XML",
-            "pages": [
-              "sefaz/visao-geral"
-            ]
-          }
-        ]
-      },
-      {
-        "dropdown": "Referência",
-        "groups": [
-          {
-            "group": "Autenticação",
-            "pages": [
-              "referencia/auth-token"
-            ]
-          },
-          {
-            "group": "NFS-e",
-            "pages": [
-              "referencia/nfse-enviar",
-              "referencia/nfse-consulta"
-            ]
-          },
-          {
-            "group": "NF-e",
-            "pages": [
-              "referencia/nfe-enviar",
-              "referencia/nfe-consulta"
+              {
+                "group": "Introdução",
+                "pages": [
+                  "index",
+                  "autenticacao"
+                ]
+              }
             ]
           },
           {
             "group": "SEFAZ",
             "pages": [
-              "referencia/sefaz-enviar"
+              {
+                "group": "Envio XML",
+                "pages": [
+                  "sefaz/visao-geral"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "NF-e",
+            "pages": [
+              {
+                "group": "Recebimento",
+                "pages": [
+                  "nfe/visao-geral",
+                  "nfe/exemplo-lote",
+                  "nfe/consulta"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "NFS-e",
+            "pages": [
+              {
+                "group": "Recebimento",
+                "pages": [
+                  "nfse/visao-geral",
+                  "nfse/campos",
+                  "nfse/exemplo-lote",
+                  "nfse/consulta"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "API Specs",
+            "pages": [
+              "nfe/consulta",
+              "nfe/exemplo-lote",
+              "nfe/visao-geral"
+            ]
+          },
+          {
+            "group": "API Playground",
+            "pages": [
+              {
+                "group": "Autenticação",
+                "pages": [
+                  "referencia/auth-token"
+                ]
+              },
+              {
+                "group": "NFS-e",
+                "pages": [
+                  "referencia/nfse-enviar",
+                  "referencia/nfse-consulta"
+                ]
+              },
+              {
+                "group": "NF-e",
+                "pages": [
+                  "referencia/nfe-enviar",
+                  "referencia/nfe-consulta"
+                ]
+              },
+              {
+                "group": "SEFAZ",
+                "pages": [
+                  "referencia/sefaz-enviar"
+                ]
+              }
             ]
           }
         ]
       },
       {
-        "dropdown": "API",
-        "pages": [
-          "nfe/consulta",
-          "nfe/exemplo-lote",
-          "nfe/visao-geral"
+        "tab": "Emissao DC-e",
+        "groups": [
+          {
+            "group": "Começar",
+            "pages": [
+              "untitled-page"
+            ]
+          }
         ]
       }
     ]
@@ -120,7 +145,9 @@
       "languages": [
         "curl",
         "python",
-        "javascript"
+        "javascript",
+        "ruby",
+        "go"
       ],
       "defaults": "required",
       "prefill": true
@@ -140,6 +167,32 @@
     ]
   },
   "footer": {
-    "socials": {}
+    "socials": {
+      "linkedin": "https://www.linkedin.com/company/gsfsolucoesbr",
+      "instagram": "https://instagram.com/gsfsolucoesbr"
+    }
+  },
+  "background": {
+    "decoration": "gradient"
+  },
+  "fonts": {
+    "heading": {
+      "family": "Inter",
+      "weight": 500
+    },
+    "body": {
+      "family": "Ubuntu",
+      "weight": 400
+    }
+  },
+  "styling": {
+    "eyebrows": "section"
+  },
+  "contextual": {
+    "options": [
+      "download-pdf",
+      "download-spec"
+    ],
+    "display": "header"
   }
 }
