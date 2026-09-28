@@ -1,0 +1,722 @@
+---
+title: "Manual GSF DC-e"
+---
+
+## Objetivo
+
+Este manual tem como objetivo orientar os usuários na utilização do módulo de Declaração de Conteúdo Eletrônica (DC-e) do GSF Fiscal, abrangendo desde a importação das informações até a geração e consulta dos documentos.
+
+## 1. Visão Geral do Processo
+
+O fluxo operacional da DC-e no GSF Fiscal ocorre da seguinte forma:
+
+1. Preparação da planilha de importação;
+2. Importação dos dados para o GSF Fiscal;
+3. Geração da Declaração de Conteúdo Eletrônica;
+4. Emissão do XML;
+5. Download do PDF (DACE) e XML;
+6. Consulta dos documentos emitidos.
+
+## 2. Acessando o Módulo DC-e      
+
+2.1. Na tela principal do GSF Fiscal, no menu lateral, clique em **Módulos** e em seguida clique em **DFe – Documento Fiscal Eletrônico**.
+
+![Image](/images/image-22.png "Image")
+
+ 2.2.     Na tela do **DFe – Documento Fiscal Eletrônico**, clique em **Declaração de Conteúdo Eletrônico (DCE)**. 
+
+![Image](/images/image-23.png "Image")
+
+2.3.     Será exibida a tela principal do módulo.
+
+![Image](/images/image-24.png "Image")
+
+Nesta tela é possível:
+
+- Consultar documentos já gerados;
+- Visualizar o status das declarações;
+- Fazer download dos arquivos XML e PDF;
+- Pesquisar documentos específicos;
+- Criar DCEs. 
+
+**Significado dos status**
+
+| **Status** | **Descrição** |
+| :-- | :-- |
+| ✅ Emitida/Autorizada | Documento gerado com sucesso |
+| ❌ Rejeitada | O documento apresentou alguma inconsistência |
+| ⏳ Importada/Pendente | Documento aguardando processamento |
+| 🚫 Cancelada | Documento cancelado |
+| 🔵 Inutilizada | Numeração inutilizada |
+
+**Observação**
+
+Os botões **PDF** e **XML**  na coluna **Arquivo** permitem consultar os arquivos gerados para cada declaração.
+
+ 3.       Criando uma Declaração de Conteúdo Eletrônica
+
+### 3.1.       Criando uma DCe
+
+ 
+
+Na tela principal da DCE, clique em Criar para iniciar uma declaração. O sistema abrirá a tela de preenchimento da declaração.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+### 3.2.   Preenchimento das informações gerais
+
+Na tela de cadastro, informe os dados do documento:
+
+·     Número;
+
+·     Série;
+
+·     Data de emissão;
+
+·     Remetente;
+
+·     Destinatário;
+
+·     Transportadora (quando houver)
+
+ 
+
+ 
+
+**Observação:** alguns campos podem ser preenchidos automaticamente conforme a parametrização da empresa.
+
+ 
+
+### 3.3.      Selecionando o Tipo de Emissão
+
+No campo **Tipo de Emissão**, selecione a opção correspondente ao processo utilizado pela empresa.
+
+ 
+
+As opções disponíveis são:
+
+·    0 – Fisco
+
+·    1 – Marketplace
+
+·    2 – Emissor Próprio
+
+·    3 – Transportadora
+
+ 
+
+A opção a ser utilizada deve seguir o procedimento definido pela empresa.
+
+ 
+
+### 3.4.     Selecionando a Modalidade de Transporte
+
+No campo **Modalidade de Transporte**, escolha a forma de envio da mercadoria:
+
+·     **0 – Transporte pelos Correios** - Utilizado quando a remessa será realizada pelos Correios.
+
+·     **1 – Transporte por Conta Própria** - Utilizado quando a própria empresa realizará o transporte.
+
+·     **2 – Transporte por Empresa Transportadora** - Utilizado quando a entrega será realizada por uma transportadora terceirizada.
+
+ 
+
+### 3.5.      Inclusão dos Itens da Declaração
+
+Na aba **Itens**, clique em **Adicionar** para inserir os produtos que compõem a declaração. Será aberta a tela de cadastro do item. Informe:
+
+·      Descrição do produto;
+
+·      Unidade de medida;
+
+·      Valor unitário;
+
+·      Quantidade.
+
+ 
+
+ 
+
+### 3.6.     Informando os Valores dos Itens
+
+Na aba **Totais**, preencha:
+
+ 
+
+·      Valor unitário;
+
+·      Quantidade.
+
+ 
+
+O sistema calculará automaticamente o valor total do item.
+
+ 
+
+Após concluir o preenchimento, clique em **Salvar**.
+
+ 
+
+Repita o processo caso seja necessário adicionar mais produtos à declaração.
+
+ 
+
+### 3.7.     Salvando a Declaração
+
+Depois de preencher todos os dados e incluir os itens:
+
+1.     Revise as informações;
+
+2.    Clique em **Salvar** para gravar o documento.
+
+ 
+
+### 3.8.     Acompanhando o Retorno da Emissão
+
+Na aba **Dados do DCE**, é possível consultar as informações retornadas após a geração do documento.
+
+ 
+
+Serão apresentados:
+
+·     Status
+
+·     Situação atual da declaração.
+
+·     Descrição do Retorno
+
+·     Mensagem retornada pelo processo de emissão.
+
+·     Chave DCE
+
+·     Identificação única da declaração eletrônica.
+
+·     Protocolo DCE
+
+·     Número do protocolo gerado para o documento.
+
+ 
+
+Caso o documento não seja autorizado ou apresente alguma inconsistência, a mensagem exibida em **Descrição do Retorno** deve ser informada ao suporte para análise.
+
+ 
+
+ 
+
+## 4.      Gerenciando o Documento Gerado
+
+Após salvar a declaração, o documento poderá ser consultado na tela da DCE. Ao abrir o registro, clique em **Ação** para visualizar as operações disponíveis.
+
+ 
+
+ 
+
+**Gerar XML**
+
+Realiza a geração do documento eletrônico. Utilize esta opção para iniciar o processo de emissão do DC-e.
+
+ 
+
+**Download XML**
+
+Permite baixar o arquivo XML do documento gerado.
+
+ 
+
+**Download PDF DACE**
+
+Permite visualizar e baixar o Documento Auxiliar da Declaração de Conteúdo Eletrônica (DACE) em PDF.
+
+ 
+
+**Reimprimir DACE**
+
+Utilizado quando for necessário gerar novamente a impressão do documento.
+
+ 
+
+**Cancelar DCE**
+
+Permite cancelar uma declaração já emitida, conforme as regras aplicáveis.
+
+ 
+
+**Excluir**
+
+Remove o documento que ainda não foi utilizado ou que foi criado incorretamente.
+
+**Atenção:** a exclusão deve ser realizada somente quando permitido pelo processo da empresa.
+
+ 
+
+## 5.       Importação da Planilha para Geração dos DC-es
+
+### 5.1.       Acessando a Importação de Planilhas
+
+No menu lateral do GSF Fiscal, acesse: **Integrações** → **Importação de Planilhas**.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+### 5.2.      Selecionando o Layout
+
+·        Na tela de importação, localize a opção: **DC-e Declaração de Conteúdo Eletrônica**
+
+·        Selecione o layout e clique em **Próximo**.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+### 5.3.      Download do Template da Planilha
+
+·        Após selecionar o layout, o sistema exibirá as colunas disponíveis para importação.
+
+·        Caso seja necessário, clique em Download Layout para baixar o modelo padrão utilizado pelo sistema.
+
+·        **Importante:** utilize sempre o layout disponibilizado pelo GSF Fiscal.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+### 5.4.     Selecionando o arquivo
+
+Clique em **Clique para escolher o arquivo**. São aceitos os formatos:
+
+·      XLS
+
+·      XLSX
+
+·      CSV
+
+Após selecionar a planilha, clique em **Próximo**.
+
+ 
+
+ 
+
+### 5.5.     Mapeamento das Colunas
+
+O sistema exibirá:
+
+ 
+
+**Colunas do Template**
+
+Campos esperados pelo GSF Fiscal.
+
+ 
+
+**Colunas do Arquivo**
+
+Campos existentes na planilha importada.
+
+ 
+
+Faça a associação entre os campos da planilha e os campos do template.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Após concluir o mapeamento, clique em **Próximo**.
+
+Caso o layout da planilha siga exatamente o modelo disponibilizado pelo sistema, os vínculos poderão ser reconhecidos automaticamente.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+### 5.6.     Conferindo a Pré Visualização
+
+Antes da importação definitiva, o sistema apresentará uma prévia dos dados.
+
+Verifique:
+
+·        Número do DCE;
+
+·        Tipo de emissão;
+
+·        Emitente;
+
+·        Destinatário;
+
+·        Demais informações da planilha.
+
+Se os dados estiverem corretos, clique em **Importar**.
+
+ 
+
+ 
+
+Após a conclusão do processo, o sistema exibirá a mensagem: **Importação concluída. Dados importados com sucesso.**
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+A partir desse momento, os registros estarão disponíveis para geração dos DC-es.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+## 6.      Configuração do Certificado Digital
+
+O cadastro do certificado digital é responsável por permitir a assinatura e a comunicação com os órgãos autorizadores dos documentos fiscais eletrônicos.
+
+ 
+
+### 6.1. Acessando a tela do Certificado Digital
+
+No menu lateral acesse:
+
+Menu Principal à Administração à Configurações  à Certificado Digital
+
+ 
+
+ 
+
+ 
+
+ 
+
+### 6.2.   Consultando Certificados Cadastrados
+
+A tela **Certificados NFe** apresenta todos os certificados já existentes no ambiente.
+
+As principais informações exibidas são:
+
+·        CNPJ;
+
+·        UF;
+
+·        Tipo de Certificado;
+
+·        Monitoramento;
+
+·        Data de vencimento.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+### 6.3.          Criando um Novo Certificado
+
+Clique em **Criar**. Será aberta a tela de cadastro.
+
+ 
+
+ 
+
+Informe:
+
+·        **Empresa**: Empresa que utilizará o certificado.
+
+·        **CNPJ**: CNPJ do proprietário do certificado.
+
+·        **Nome**: Nome de identificação do certificado.
+
+·        **UF**: Estado da empresa.
+
+·        **Caminho**: Clique em Escolher arquivo e selecione o certificado (.PFX).
+
+·        **Senha**: Senha do certificado digital.
+
+·        **Tipo de Certificado**: Exemplo: NFe/NFSe.
+
+·        **Monitora**: Define se o sistema realizará acompanhamento do vencimento.
+
+·        **Vencimento**: Data de validade do certificado.
+
+·        **Notificar Vencimento**: Define se haverá alerta automático.
+
+·        **E-mail**: Endereço que receberá as notificações.
+
+ 
+
+Após preencher os campos, clique em **Salvar**. O certificado ficará disponível para utilização nas emissões.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+### 6.4.         Visualizando o Certificado Cadastrado
+
+Após a gravação, o certificado aparecerá na listagem.
+
+ 
+
+ 
+
+Basta selecionar o registro para visualizar:
+
+·        Empresa;
+
+·        CNPJ;
+
+·        Nome;
+
+·        Tipo do certificado;
+
+·        Data de vencimento;
+
+·        Configuração de monitoramento;
+
+·        E-mail de notificação.
+
+ 
+
+### 6.5.          Alterando o Certificado Cadastrado
+
+Com o registro aberto, clique em **Editar**. Os campos serão liberados para alteração.
+
+ 
+
+ 
+
+Após realizar as mudanças desejadas, clique novamente em **Salvar**.
