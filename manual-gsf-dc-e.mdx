@@ -209,7 +209,24 @@ No menu lateral do GSF Fiscal, acesse: **Integrações** → **Importação de P
 
 ![Image](/images/image-32.png "Image")
 
-### 6.4. Selecionando o arquivo
+### 6.4. Preenchendo os campos da planilha Template 
+
+O campo **TIPO_EMISSAO** permite a lista de valores abaixo:
+
+- 0=Fisco
+- 1=Marketplace
+- 2=Emissor próprio
+- 3=Transportadora
+
+O Campo **MOD_TRANSP** permite a lista de valores abaixo:
+
+- 0=Transporte pelos Correios;
+- 1=Transporte por conta própria;
+- 2=Transporte por empresa transportadora
+
+Clicar em Salvar.
+
+### 6.5. Selecionando o arquivo
 
 Clique em **Clique para escolher o arquivo**. São aceitos os formatos:
 
@@ -221,7 +238,7 @@ Após selecionar a planilha, clique em **Próximo**. 
 
 ![Image](/images/image-33.png "Image")
 
-### 6.5. Mapeamento das Colunas
+### 6.6. Mapeamento das Colunas
 
 O sistema exibirá:
 
@@ -241,7 +258,7 @@ Faça a associação entre os campos da planilha e os campos do template. 
 
 Caso o layout da planilha siga exatamente o modelo disponibilizado pelo sistema, os vínculos poderão ser reconhecidos automaticamente.
 
-### 6.6. Conferindo a Pré Visualização
+### 6.7. Conferindo a Pré Visualização
 
 Antes da importação definitiva, o sistema apresentará uma prévia dos dados.
 
@@ -262,3 +279,15 @@ Após a conclusão do processo, o sistema exibirá a mensagem: **Importação co
 ![Image](/images/image-36.png "Image")
 
 A partir desse momento, os registros estarão disponíveis para geração dos DC-es.
+
+## 7. Emissão DC-e para a Sefaz SP
+
+Após a integração dos dados da planilha, o sistema GSF fará a integração da declaração, assinatura do XML e transmissão da DC-e para a Sefaz SP.
+
+Acessar Módulos → DFe → Declaração de Conteúdo Eletrônica (DC-e): 
+
+As DC-e integradas ficarão disponíveis para a visualização do status, download do PDF e XML:
+
+## 8. Cancelamento DC-e 
+
+Caso ocorra a necessidade de cancelamento de uma DC-e, selecionar a DC-e desejada → Ação → Cancelar DC-e
