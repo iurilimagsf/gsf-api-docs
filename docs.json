@@ -157,6 +157,13 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "Manuais GSF",
+        "pages": [
+          "manuais-gsf/certificado-digital",
+          "manuais-gsf/manual-gsf-reinf-2"
+        ]
       }
     ]
   },
