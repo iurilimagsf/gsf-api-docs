@@ -1,0 +1,158 @@
+---
+title: "Manual Integrações"
+---
+
+## Introdução
+
+Este material tem o intuito de apoiar nos processos de integrações dos dados mestres e transacionais oriundos do ERP, planilhas em layouts diversos e arquivos XML.
+
+## Acessando o GSF Fiscal
+
+O sistema GSF Fiscal é acessado através da URL: [**https://app.portalgsf.com.br/web**](https://app.portalgsf.com.br/web)
+
+![Image](/images/image-55.png "Image")
+
+- Inserir as credenciais de acesso.
+
+ Após acessar o GSF Fiscal, o usuário será direcionado à interface principal do sistema. 
+
+![Image](/images/image-56.png "Image")
+
+### Introdução
+
+Este material tem o intuito de apoiar nos processos de integrações dos dados mestres e transacionais oriundos do **Oracle** **EBS**, **planilhas em layouts diversos** e **arquivos XML**.
+
+### Integração Oracle EBS
+
+Neste tópico iremos explicar os passos para a realização das cargas do **ERP Oracle EBS** e integração o sistema **GSF Fiscal**.
+
+Atualmente possuímos as seguintes integrações EBS:
+
+- Notas Fiscais de Entradas
+- Notas Fiscais de Saídas
+- Parcelas - Retenções
+- Contábil - Lançamentos Contábeis e Saldos Mensais
+- Inventário
+
+Para todas as cargas acima descritas, o processo na aplicação GSF segue a mesma sistemática de execução.
+
+- Acessar o Módulo **Integrações** à **Integração Oracle-EBS **
+
+![Image](/images/image-57.png "Image")
+
+- Clique sobre o botão **Criar**. O sistema apresentará a tela de cadastro da integração, na qual devem ser informados os parâmetros para definir o período e o tipo de dados que serão integrados.
+
+![Image](/images/image-58.png "Image")
+
+- **Data Início** - Informe a data inicial do período que será considerado na integração.
+- **Data Fim** - Informe a data final do período que será considerado na integração.
+- **Invoice** - Informe o número da Invoice, quando a integração estiver relacionada a um documento específico.
+- **Num NF** - Informe o número da Nota Fiscal, quando aplicável.
+- **Data do Cadastro** - Campo preenchido automaticamente pelo sistema com a data em que a integração está sendo cadastrada.
+- **Data Proc.** - Campo relacionado à data de processamento da integração, preenchido pelo sistema.
+- **Processo** - Campo preenchido pelo sistema de acordo com o processamento da integração.
+- **Estabelecimento** - Selecione o estabelecimento para o qual a integração será realizada.
+- **Modo de Carga** - Selecione o modo de carga aplicável à integração.
+- **Tipo** - Selecione o tipo de documento/dado a ser integrado, como Entrada.
+- **Observação** - Campo opcional para registrar informações adicionais sobre a integração. 
+
+![Image](/images/image-59.png "Image")
+
+Quando a carga estiver com o **Status Finalizada**, significa que os dados solicitados para integração já estão no GSF Fiscal. Caso esteja em processamento, deve aguardar até o status alterar para Finalizada. O Botão **Atualizar** consegue ver em tempo real o status.
+
+Caso apareça a mensagem finalizada com **Erro**, deve procurar o setor de TI e administrador do sistema para que seja verificado o motivo.
+
+### Importação de Arquivos – Integração / Upload de planilhas
+
+Esta funcionalidade permite importar dados para o GSF Fiscal por meio de planilhas previamente estruturadas, facilitando a integração de informações provenientes de outros sistemas.
+
+#### Selecionar o tipo de layout
+
+- Acesse a opção Importação de Planilhas.
+- Na tela inicial, selecione a tabela correspondente ao arquivo que será importado.
+
+![Image](/images/image-60.png "Image")
+
+-  Os layouts disponíveis são:
+  - DC-e - Declaração de Conteúdo Eletrônica;
+  - Capa do Documento Fiscal;
+  - Conta Contábil;
+  - Lançamento Contábil;
+  - Aglutinação.
+
+![Image](/images/image-61.png "Image")
+
+- Após selecionar o layout desejado, clique em **Próximo**.
+
+#### Verificar o layout
+
+Após selecionar a tabela, o sistema apresentará as colunas que compõem o layout escolhido.
+
+- Verifique as colunas disponíveis e os respectivos tipos de dados.
+- Caso necessário, clique em **Download Layout** para baixar a planilha modelo.
+- Utilize o layout disponibilizado pelo sistema para preencher os dados que serão importados.
+- Após o preenchimento, salve o arquivo em seu computador.
+
+> **Importante:** Utilize o layout disponibilizado pelo sistema para garantir que a estrutura e a formatação das informações estejam de acordo com o padrão de importação. São aceitos arquivos nos formatos XLS, XLSX e CSV.
+
+- Clique em **Próximo** para continuar.
+
+ 
+
+ 
+
+ 
+
+ 
+
+#### Enviar o arquivo
+
+ 
+
+Na etapa **Upload Arquivo**, selecione o arquivo que será importado.
+
+ 
+
+·        Clique em **Clique para escolher o arquivo**.
+
+ 
+
+·        Localize e selecione o arquivo preenchido.
+
+·        Após o carregamento, o nome do arquivo será apresentado na tela.
+
+·        Clique em **Próximo**.
+
+ 
+
+<br />
+
+** **
+
+#### Realizar o mapeamento das colunas
+
+Na etapa **Mapeamento**, associe as colunas do arquivo às respectivas colunas do template.
+
+![Image](/images/image-62.png "Image")
+
+- No painel **Colunas do Template**, localize a coluna que deseja preencher.
+- No painel **Colunas do Arquivo**, localize a coluna correspondente.
+- Arraste a coluna do arquivo para a coluna correspondente do template.
+- Para desfazer um vínculo, clique no botão **Remover** ao lado da coluna mapeada.
+- Após realizar o mapeamento necessário, clique em **Próximo**.
+
+#### Pré-visualizar e importar
+
+Na etapa **Preview**, o sistema apresentará uma pré-visualização dos dados que serão importados.
+
+![Image](/images/image-63.png "Image")
+
+- Verifique as informações apresentadas.
+- Confirme se os dados estão corretamente associados às respectivas colunas.
+- Estando as informações corretas, clique em **Importar** para concluir o processo. 
+
+![Image](/images/image-64.png "Image")
+
+Após a importação, o sistema processará o arquivo e os dados importados ficarão disponíveis no GSF Fiscal.
+
+ 
