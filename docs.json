@@ -24,12 +24,6 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Inicio",
-        "pages": [
-          "index"
-        ]
-      },
-      {
         "tab": "Integração Fiscal",
         "groups": [
           {
