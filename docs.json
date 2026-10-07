@@ -77,6 +77,13 @@
             ]
           },
           {
+            "group": "Consulta Status",
+            "pages": [
+              "referencia/consulta-status-nota-fiscal",
+              "referencia/nota64"
+            ]
+          },
+          {
             "group": "API Playground",
             "pages": [
               {
@@ -96,7 +103,8 @@
                 "group": "NF-e",
                 "pages": [
                   "referencia/nfe-enviar",
-                  "referencia/nfe-consulta"
+                  "referencia/nfe-consulta",
+                  "referencia/consulta-status-nota-fiscal"
                 ]
               },
               {

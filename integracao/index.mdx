@@ -50,6 +50,8 @@ O header de autenticação usa o prefixo **`JWT`**, não `Bearer`.
 | `POST` | `/api/v1/nfe/` | Receber lote NF-e (JSON) |
 | `POST` | `/api/v1/nfe/consulta/` | Consultar retorno NF-e |
 | `POST` | `/api/v1/nfe/sefaz/` | Enviar XML SEFAZ |
+| `POST` | `/api/v1/consulta-status/` | Consultar status por chave de acesso |
+| `POST` | `/api/v1/nota64/` | Obter PDF da nota em Base64 |
 
 ## Fluxo recomendado
 
@@ -64,7 +66,7 @@ O header de autenticação usa o prefixo **`JWT`**, não `Bearer`.
     Persista o código de origem (`codigoOrigem` / `idNfErp`) e, na NFS-e, o `nroProtocolo`.
   </Step>
   <Step title="Consulte o retorno">
-    Chame `/nfse/consulta/` ou `/nfe/consulta/` com CNPJ + `cod_origem` até obter status final.
+    Chame `/nfse/consulta/` ou `/nfe/consulta/` com CNPJ + `cod_origem` até obter status final. Para uma nota já identificada pela chave de acesso, use `/api/v1/consulta-status/`.
   </Step>
 </Steps>
 

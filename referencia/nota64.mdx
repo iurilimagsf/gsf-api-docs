@@ -1,0 +1,75 @@
+---
+title: "POST /api/v1/nota64/"
+description: "Retorna o PDF de uma nota fiscal em Base64."
+openapi: "openapi/public.json POST /api/v1/nota64/"
+---
+
+Retorna o PDF de uma nota fiscal já armazenada na GSF, codificado em Base64. A localização é feita pelo CNPJ ou CPF do destinatário e pelo número da nota.
+
+## Endpoint
+
+```http
+POST /api/v1/nota64/
+Host: hom.portalgsf.com.br
+Authorization: JWT <token>
+Content-Type: application/json
+```
+
+Homologação:
+
+```text
+https://hom.portalgsf.com.br/api/v1/nota64/
+```
+
+## Corpo da requisição
+
+| Campo | Tipo | Obrigatório | Descrição |
+| --- | --- | --- | --- |
+| `cnpj` | string | Sim | CNPJ ou CPF do destinatário, preferencialmente somente dígitos. |
+| `numeroNota` | string | Sim | Número do documento fiscal armazenado na GSF. |
+
+```json
+{
+  "cnpj": "22760852000110",
+  "numeroNota": "12345"
+}
+```
+
+## Resposta `200`
+
+O campo de resposta é `NOTA64:` — incluindo os dois-pontos no nome — e contém o PDF completo em Base64.
+
+```json
+{
+  "NOTA64:": "JVBERi0xLjcKJc..."
+}
+```
+
+Decodifique o valor para obter o arquivo PDF. O conteúdo decodificado começa com os bytes `%PDF`.
+
+## Códigos HTTP
+
+| Código | Significado | Ação |
+| --- | --- | --- |
+| `200` | PDF localizado e convertido | Decodifique `NOTA64:` e salve o PDF. |
+| `400` | JSON inválido ou campo obrigatório ausente | Corrija `cnpj` e `numeroNota`. |
+| `401` | JWT ausente, inválido ou expirado | Obtenha um novo token. |
+| `404` | Nota não encontrada ou PDF indisponível | Confirme o CNPJ do destinatário e o número da nota. |
+| `500` | Erro interno | Registre a tentativa e contate o suporte. |
+
+<Warning>
+  O `cnpj` usado na busca é o do **destinatário**, não necessariamente o do emitente. Envie o documento sem máscara quando possível.
+</Warning>
+
+## cURL
+
+```bash
+curl --request POST \
+  --url https://hom.portalgsf.com.br/api/v1/nota64/ \
+  --header 'Authorization: JWT <token>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "cnpj": "22760852000110",
+    "numeroNota": "12345"
+  }'
+```

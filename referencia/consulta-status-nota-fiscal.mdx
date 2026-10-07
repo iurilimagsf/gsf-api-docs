@@ -1,0 +1,94 @@
+---
+title: "POST /api/v1/consulta-status/"
+description: "Consulta o status de uma NF-e ou NFS-e pela chave de acesso."
+openapi: "openapi/public.json POST /api/v1/consulta-status/"
+---
+
+Consulta uma NF-e ou NFS-e já registrada na GSF usando a chave de acesso. A resposta reúne o XML armazenado e os dados de processamento da nota.
+
+Esta é a rota versionada recomendada. Ela não é o mesmo recurso que `/api/v1/nfe/consulta/`, que consulta por `cnpj` e `cod_origem`.
+
+## Endpoint
+
+```http
+POST /api/v1/consulta-status/
+Host: hom.portalgsf.com.br
+Authorization: JWT <token>
+Content-Type: application/json
+```
+
+O ambiente de homologação não gera documentos com valor fiscal:
+
+```text
+https://hom.portalgsf.com.br/api/v1/consulta-status/
+```
+
+## Corpo da requisição
+
+| Campo | Tipo | Obrigatório | Descrição |
+| --- | --- | --- | --- |
+| `chave` | string | Sim | Chave de acesso da NF-e ou NFS-e que será consultada. |
+
+Exemplo:
+
+```json
+{
+  "chave": "35260922760852000110550010000010011234567890"
+}
+```
+
+## Resposta `200`
+
+Quando a nota é encontrada, a API retorna:
+
+| Campo | Tipo | Descrição |
+| --- | --- | --- |
+| `chave` | string | Chave recebida na consulta. |
+| `xml` | string | XML armazenado da nota. Pode ser uma string vazia se o XML não estiver disponível. |
+| `cod_status_nfe` | string ou número | Código de retorno do processamento da nota. |
+| `desc_status_nfe` | string | Descrição do status retornado. |
+| `protocolo_nfe` | string | Protocolo associado ao processamento da nota. |
+
+```json
+{
+  "chave": "35260922760852000110550010000010011234567890",
+  "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><NFe>...</NFe>",
+  "cod_status_nfe": "100",
+  "desc_status_nfe": "Autorizado o uso da NF-e",
+  "protocolo_nfe": "135260000000000"
+}
+```
+
+## Códigos HTTP
+
+| Código | Significado | Ação |
+| --- | --- | --- |
+| `200` | Nota encontrada | Leia o status, o protocolo e o XML retornado. |
+| `400` | Payload inválido | Informe `chave` como string não vazia. |
+| `401` | JWT ausente, inválido ou expirado | Obtenha um novo token e envie `Authorization: JWT <token>`. |
+| `404` | Nota não encontrada para a chave informada | Confirme a chave e o ambiente utilizado. |
+| `500` | Erro interno durante a consulta | Registre a chave e o horário da tentativa e contate o suporte. |
+
+Resposta `404`:
+
+```json
+{
+  "mensagem": "Nota fiscal não encontrada para a chave informada."
+}
+```
+
+## cURL
+
+```bash
+curl --request POST \
+  --url https://hom.portalgsf.com.br/api/v1/consulta-status/ \
+  --header 'Authorization: JWT <token>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "chave": "35260922760852000110550010000010011234567890"
+  }'
+```
+
+<Info>
+  O contrato usa o roteamento versionado do GSF em `api/v1/`, mantendo a implementação da view `ConsultaStatusNotaFiscal`.
+</Info>

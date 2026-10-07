@@ -565,6 +565,118 @@
         }
       }
     },
+    "/api/v1/consulta-status/": {
+      "post": {
+        "tags": [
+          "NFe"
+        ],
+        "summary": "Consultar status da nota fiscal",
+        "description": "Consulta uma NF-e ou NFS-e pela chave de acesso e retorna o XML armazenado, o status e o protocolo de processamento.",
+        "operationId": "consultarStatusNotaFiscal",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsultaStatusNotaFiscalRequest"
+              },
+              "example": {
+                "chave": "35260922760852000110550010000010011234567890"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Nota encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsultaStatusNotaFiscalResponse"
+                },
+                "example": {
+                  "chave": "35260922760852000110550010000010011234567890",
+                  "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><NFe>...</NFe>",
+                  "cod_status_nfe": "100",
+                  "desc_status_nfe": "Autorizado o uso da NF-e",
+                  "protocolo_nfe": "135260000000000"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Payload inválido"
+          },
+          "401": {
+            "description": "JWT ausente, inválido ou expirado"
+          },
+          "404": {
+            "description": "Nota fiscal não encontrada para a chave informada",
+            "content": {
+              "application/json": {
+                "example": {
+                  "mensagem": "Nota fiscal não encontrada para a chave informada."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno durante a consulta"
+          }
+        }
+      }
+    },
+    "/api/v1/nota64/": {
+      "post": {
+        "tags": [
+          "NFe"
+        ],
+        "summary": "NF-e — Obter PDF em Base64",
+        "description": "Localiza uma nota pelo CNPJ ou CPF do destinatário e pelo número do documento e retorna o PDF codificado em Base64.",
+        "operationId": "obterNota64",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Nota64Request"
+              },
+              "example": {
+                "cnpj": "22760852000110",
+                "numeroNota": "12345"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "PDF localizado e convertido para Base64",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Nota64Response"
+                },
+                "example": {
+                  "NOTA64:": "JVBERi0xLjcKJc..."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "JSON inválido ou campo obrigatório ausente"
+          },
+          "401": {
+            "description": "JWT ausente, inválido ou expirado"
+          },
+          "404": {
+            "description": "Nota não encontrada ou PDF indisponível"
+          },
+          "500": {
+            "description": "Erro interno"
+          }
+        }
+      }
+    },
     "/api/v1/nfe/sefaz/": {
       "post": {
         "tags": [
@@ -662,6 +774,79 @@
           "cod_origem": {
             "type": "string",
             "example": "GSF|1001"
+          }
+        }
+      },
+      "ConsultaStatusNotaFiscalRequest": {
+        "type": "object",
+        "required": [
+          "chave"
+        ],
+        "properties": {
+          "chave": {
+            "type": "string",
+            "description": "Chave de acesso da NF-e ou NFS-e.",
+            "example": "35260922760852000110550010000010011234567890"
+          }
+        }
+      },
+      "ConsultaStatusNotaFiscalResponse": {
+        "type": "object",
+        "required": [
+          "chave",
+          "xml",
+          "cod_status_nfe",
+          "desc_status_nfe",
+          "protocolo_nfe"
+        ],
+        "properties": {
+          "chave": {
+            "type": "string"
+          },
+          "xml": {
+            "type": "string",
+            "description": "XML armazenado; pode ser vazio quando não estiver disponível."
+          },
+          "cod_status_nfe": {
+            "type": "string",
+            "description": "Código de retorno do processamento; a API pode serializar o valor como número."
+          },
+          "desc_status_nfe": {
+            "type": "string"
+          },
+          "protocolo_nfe": {
+            "type": "string"
+          }
+        }
+      },
+      "Nota64Request": {
+        "type": "object",
+        "required": [
+          "cnpj",
+          "numeroNota"
+        ],
+        "properties": {
+          "cnpj": {
+            "type": "string",
+            "description": "CNPJ ou CPF do destinatário, preferencialmente somente dígitos.",
+            "example": "22760852000110"
+          },
+          "numeroNota": {
+            "type": "string",
+            "description": "Número do documento fiscal armazenado na GSF.",
+            "example": "12345"
+          }
+        }
+      },
+      "Nota64Response": {
+        "type": "object",
+        "required": [
+          "NOTA64:"
+        ],
+        "properties": {
+          "NOTA64:": {
+            "type": "string",
+            "description": "PDF completo codificado em Base64."
           }
         }
       }
