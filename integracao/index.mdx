@@ -21,6 +21,9 @@ Bem-vindo à documentação técnica da **API GSF Soluções**. Aqui você encon
   <Card title="SEFAZ" icon="building-columns" href="/sefaz/visao-geral">
     Envio de XML para o fluxo de processamento SEFAZ.
   </Card>
+  <Card title="Downloads Agendados" icon="file-zipper" href="/downloads-agendados/visao-geral">
+    ZIP com XMLs e PDFs das notas da empresa por período.
+  </Card>
 </CardGroup>
 
 ## Base e autenticação
@@ -52,6 +55,8 @@ O header de autenticação usa o prefixo **`JWT`**, não `Bearer`.
 | `POST` | `/api/v1/nfe/sefaz/` | Enviar XML SEFAZ |
 | `POST` | `/api/v1/consulta-status/` | Consultar status por chave de acesso |
 | `POST` | `/api/v1/nota64/` | Obter PDF da nota em Base64 |
+| `POST` | `/api/v1/downloads-agendados/` | Iniciar download em lote (ZIP) |
+| `GET` | `/api/v1/downloads-agendados/{protocolo}/` | Consultar e baixar o ZIP |
 
 ## Fluxo recomendado
 

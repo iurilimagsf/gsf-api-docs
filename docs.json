@@ -77,13 +77,6 @@
             ]
           },
           {
-            "group": "Consulta Status",
-            "pages": [
-              "referencia/consulta-status-nota-fiscal",
-              "referencia/nota64"
-            ]
-          },
-          {
             "group": "API Playground",
             "pages": [
               {
@@ -103,8 +96,7 @@
                 "group": "NF-e",
                 "pages": [
                   "referencia/nfe-enviar",
-                  "referencia/nfe-consulta",
-                  "referencia/consulta-status-nota-fiscal"
+                  "referencia/nfe-consulta"
                 ]
               },
               {
@@ -160,6 +152,38 @@
                 "pages": [
                   "referencia/dce-emissao",
                   "referencia/dce-consulta"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Apis",
+        "groups": [
+          {
+            "group": "Consulta Status",
+            "pages": [
+              "referencia/consulta-status-nota-fiscal",
+              "referencia/nota64"
+            ]
+          },
+          {
+            "group": "Downloads Agendados",
+            "pages": [
+              "downloads-agendados/visao-geral",
+              "downloads-agendados/iniciar",
+              "downloads-agendados/consultar"
+            ]
+          },
+          {
+            "group": "API Playground",
+            "pages": [
+              {
+                "group": "Downloads Agendados",
+                "pages": [
+                  "referencia/downloads-agendados-iniciar",
+                  "referencia/downloads-agendados-consultar"
                 ]
               }
             ]

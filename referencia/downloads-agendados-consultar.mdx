@@ -1,0 +1,17 @@
+---
+title: "GET /api/v1/downloads-agendados/{protocolo}/"
+description: "Consulta o protocolo e, quando concluído, devolve o ZIP em binário."
+openapi: "openapi/public.json GET /api/v1/downloads-agendados/{protocolo}/"
+---
+
+| Status | O que fazer |
+| --- | --- |
+| `200` | Salve o corpo como `.zip` (`application/zip`) |
+| `202` | Aguarde o `Retry-After` e consulte de novo |
+| `404` | Protocolo inexistente ou sem acesso |
+| `410` | Arquivo expirou; faça um novo pedido |
+| `422` | Geração falhou; veja `mensagem` |
+
+<Tip>
+O Try-it mostra o ZIP como binário. Para salvar o arquivo, use cURL com `--output` ou o **Send and Download** do Postman. Detalhes em [Consultar e baixar](/downloads-agendados/consultar).
+</Tip>

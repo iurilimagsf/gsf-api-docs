@@ -1,0 +1,81 @@
+---
+title: "Downloads Agendados — visão geral"
+sidebarTitle: "Visão geral"
+description: "Geração e download em ZIP dos XMLs e PDFs das notas de uma empresa por período."
+---
+
+Gere um arquivo ZIP com os XMLs e PDFs das notas de uma empresa em um período, a mesma rotina da tela **Downloads Agendados** do GSF. O processamento é assíncrono: você pede o download, recebe um protocolo e consulta até o arquivo ficar pronto.
+
+## Endpoints
+
+| Operação | Path público | Sucesso |
+| --- | --- | --- |
+| Iniciar download | `POST /api/v1/downloads-agendados/` | `202` com o `protocolo` |
+| Consultar / baixar | `GET /api/v1/downloads-agendados/{protocolo}/` | `200` com o ZIP (`application/zip`) |
+
+<Warning>
+`202` no envio indica que o pedido **entrou na fila**. O arquivo só existe quando a consulta responde `200`.
+</Warning>
+
+## Fluxo recomendado
+
+<Steps>
+  <Step title="Autentique">
+    Obtenha o JWT em `/api/v1/auth/token/`. Veja [Autenticação](/autenticacao).
+  </Step>
+  <Step title="Peça o download">
+    `POST /api/v1/downloads-agendados/` com CNPJ da matriz, modelo e período. Guarde o `protocolo` da resposta.
+  </Step>
+  <Step title="Consulte até ficar pronto">
+    `GET /api/v1/downloads-agendados/{protocolo}/`. Enquanto vier `202`, aguarde o tempo do header `Retry-After` (10 segundos) e consulte de novo.
+  </Step>
+  <Step title="Salve o ZIP">
+    Com `200`, grave o corpo da resposta como arquivo `.zip`. Ele é binário, não Base64.
+  </Step>
+</Steps>
+
+## Regras
+
+| Regra | Detalhe |
+| --- | --- |
+| Empresa | `cnpj` é o CNPJ da empresa cadastrada no GSF (matriz), com 14 dígitos |
+| Filiais | Traz as notas de **todos** os estabelecimentos da empresa |
+| Período | No máximo **60 dias**, pela data de emissão |
+| Datas | `AAAA-MM-DD`, `DD-MM-AAAA` ou `DD/MM/AAAA` |
+| Modelos | `NFE`, `NFST`, `NFSE`, `AMBAS` (NF-e, NFS-e e NFST), `CTEOS`, `NFCOM` |
+| Acesso | O usuário só pede e baixa downloads de empresas às quais tem acesso |
+| Duplicidade | Pedido igual a outro ainda em andamento responde `409` com o protocolo existente |
+
+<Note>
+O CNPJ cadastrado na empresa nem sempre é o de final `0001`. Use o mesmo CNPJ que aparece no cadastro da empresa no GSF; o CNPJ de uma filial responde `403`.
+</Note>
+
+## Conteúdo do ZIP
+
+| Arquivo | Descrição |
+| --- | --- |
+| `*.xml` | XML de cada nota (quando `conteudo` é `XML` ou `AMBOS`) |
+| `*.pdf` | DANFE / PDF de cada nota (quando `conteudo` é `PDF` ou `AMBOS`) |
+| `log-retorno-operacao.txt` | Total de notas encontradas e lista das que falharam, com o motivo |
+
+<Tip>
+Uma nota sem XML disponível não interrompe o download: ela fica registrada no `log-retorno-operacao.txt` e as demais seguem no ZIP.
+</Tip>
+
+## Status do processamento
+
+| `status` | Significado |
+| --- | --- |
+| `NA_FILA` | Pedido recebido, aguardando processamento |
+| `EM_PROCESSAMENTO` | ZIP sendo gerado |
+| `CONCLUIDO` | ZIP pronto; a consulta devolve o arquivo |
+| `ERRO` | A geração falhou; veja `mensagem` |
+
+<CardGroup cols={2}>
+  <Card title="Iniciar download" icon="file-zipper" href="/downloads-agendados/iniciar">
+    Campos do pedido, validações e respostas.
+  </Card>
+  <Card title="Consultar e baixar" icon="download" href="/downloads-agendados/consultar">
+    Como acompanhar o protocolo e salvar o ZIP.
+  </Card>
+</CardGroup>

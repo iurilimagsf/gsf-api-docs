@@ -1,0 +1,119 @@
+---
+title: "Downloads Agendados — iniciar"
+sidebarTitle: "Iniciar download"
+description: "Pede a geração do ZIP de notas de uma empresa por período e devolve o protocolo."
+---
+
+Enfileira a geração do ZIP com os XMLs e PDFs das notas da empresa no período informado. A resposta traz o `protocolo` usado na [consulta](/downloads-agendados/consultar).
+
+## Endpoint
+
+```http
+POST /api/v1/downloads-agendados/
+Authorization: JWT <token>
+Content-Type: application/json
+```
+
+## Request
+
+| Campo | Tipo | Obrig. | Descrição |
+| --- | --- | --- | --- |
+| `cnpj` | string | Sim | CNPJ da empresa cadastrada no GSF (matriz), 14 dígitos, com ou sem máscara |
+| `modelo` | string | Sim | `NFE`, `NFST`, `NFSE`, `AMBAS` (NF-e, NFS-e e NFST), `CTEOS` ou `NFCOM` |
+| `data_inicio` | string | Sim | Data de emissão inicial: `AAAA-MM-DD`, `DD-MM-AAAA` ou `DD/MM/AAAA` |
+| `data_fim` | string | Sim | Data de emissão final, maior ou igual a `data_inicio`; período de no máximo 60 dias |
+| `conteudo` | string | Não | `XML`, `PDF` ou `AMBOS` (padrão `AMBOS`) |
+| `cod_status` | integer | Não | `100` autorizada, `101` cancelada, `102` inutilizada. Sem o campo, traz todas |
+
+```json
+{
+  "cnpj": "22760852000110",
+  "modelo": "NFE",
+  "data_inicio": "2026-09-01",
+  "data_fim": "2026-09-30",
+  "conteudo": "AMBOS"
+}
+```
+
+## Respostas
+
+### `202`
+
+Pedido aceito. O header `Location` traz a URL de consulta.
+
+```json
+{
+  "protocolo": 4092,
+  "status": "NA_FILA",
+  "consulta": "/api/v1/downloads-agendados/4092/"
+}
+```
+
+### `400`
+
+Campo inválido, data em formato não aceito ou período acima de 60 dias.
+
+```json
+{
+  "mensagem": "Requisição inválida",
+  "logs": [
+    { "data_fim": ["O período deve ter no máximo 60 dias"] }
+  ]
+}
+```
+
+### `401`
+
+Token ausente, inválido ou expirado. Gere um novo em `/api/v1/auth/token/`.
+
+### `403`
+
+O CNPJ não é de uma empresa cadastrada ou o usuário não tem acesso a ela.
+
+```json
+{
+  "mensagem": "CNPJ não corresponde a uma matriz cadastrada ou o usuário não tem acesso a ela.",
+  "logs": []
+}
+```
+
+### `409`
+
+Já existe um download **em andamento** com os mesmos critérios: mesma empresa, `modelo`, `conteudo`, `data_inicio`, `data_fim` e `cod_status`. Nenhum lote novo é criado; use o protocolo devolvido.
+
+```json
+{
+  "mensagem": "Já existe um download em andamento com os mesmos critérios. Acompanhe pelo protocolo informado.",
+  "logs": [],
+  "protocolo": 4092,
+  "status": "EM_PROCESSAMENTO",
+  "consulta": "/api/v1/downloads-agendados/4092/"
+}
+```
+
+<Note>
+O bloqueio vale enquanto o pedido anterior está na fila ou em processamento. Depois que ele conclui, o mesmo pedido pode ser feito de novo. Pedidos parados há mais de 2 horas não bloqueiam um novo.
+</Note>
+
+### `500`
+
+Erro interno ao registrar o pedido. Registre o horário e contate o suporte.
+
+## cURL
+
+```bash
+curl --request POST \
+  --url https://hom.portalgsf.com.br/api/v1/downloads-agendados/ \
+  --header 'Authorization: JWT <token>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "cnpj": "22760852000110",
+    "modelo": "NFE",
+    "data_inicio": "2026-09-01",
+    "data_fim": "2026-09-30"
+  }'
+```
+
+<Tip>
+Não reenvie o pedido para "acelerar" o processamento: o reenvio responde `409`. Consulte o protocolo recebido.
+</Tip>

@@ -27,6 +27,10 @@
     {
       "name": "SEFAZ",
       "description": "Envio de XML para o fluxo SEFAZ."
+    },
+    {
+      "name": "DownloadsAgendados",
+      "description": "Geração e download em ZIP dos XMLs e PDFs das notas de uma empresa por período."
     }
   ],
   "paths": {
@@ -721,6 +725,230 @@
           }
         }
       }
+    },
+    "/api/v1/downloads-agendados/": {
+      "post": {
+        "tags": [
+          "DownloadsAgendados"
+        ],
+        "summary": "Iniciar download agendado",
+        "description": "Enfileira a geração do ZIP com os XMLs e PDFs das notas da empresa (matriz e filiais) no período informado e devolve o protocolo para consulta. Período máximo de 60 dias. Um pedido igual a outro ainda em andamento responde 409 com o protocolo existente.",
+        "operationId": "iniciarDownloadAgendado",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DownloadAgendadoRequest"
+              },
+              "example": {
+                "cnpj": "22760852000110",
+                "modelo": "NFE",
+                "data_inicio": "2026-09-01",
+                "data_fim": "2026-09-30",
+                "conteudo": "AMBOS"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Pedido aceito e enfileirado",
+            "headers": {
+              "Location": {
+                "description": "URL de consulta do protocolo",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DownloadAgendadoAceito"
+                },
+                "example": {
+                  "protocolo": 4092,
+                  "status": "NA_FILA",
+                  "consulta": "/api/v1/downloads-agendados/4092/"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Campos inválidos ou período acima de 60 dias",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DownloadAgendadoErro"
+                },
+                "example": {
+                  "mensagem": "Requisição inválida",
+                  "logs": [
+                    {
+                      "data_fim": [
+                        "O período deve ter no máximo 60 dias"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT ausente, inválido ou expirado"
+          },
+          "403": {
+            "description": "CNPJ não é de uma empresa cadastrada ou o usuário não tem acesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DownloadAgendadoErro"
+                },
+                "example": {
+                  "mensagem": "CNPJ não corresponde a uma matriz cadastrada ou o usuário não tem acesso a ela.",
+                  "logs": []
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Já existe um download em andamento com os mesmos critérios",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DownloadAgendadoErro"
+                },
+                "example": {
+                  "mensagem": "Já existe um download em andamento com os mesmos critérios. Acompanhe pelo protocolo informado.",
+                  "logs": [],
+                  "protocolo": 4092,
+                  "status": "EM_PROCESSAMENTO",
+                  "consulta": "/api/v1/downloads-agendados/4092/"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno ao registrar o pedido"
+          }
+        }
+      }
+    },
+    "/api/v1/downloads-agendados/{protocolo}/": {
+      "get": {
+        "tags": [
+          "DownloadsAgendados"
+        ],
+        "summary": "Consultar e baixar download agendado",
+        "description": "Consulta o protocolo. Enquanto o ZIP é gerado responde 202 (respeite o header Retry-After); quando concluído, o corpo da resposta é o próprio arquivo ZIP em binário (application/zip).",
+        "operationId": "consultarDownloadAgendado",
+        "parameters": [
+          {
+            "name": "protocolo",
+            "in": "path",
+            "required": true,
+            "description": "Protocolo devolvido no envio (202 ou 409).",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 4092
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ZIP com os XMLs, PDFs e o log-retorno-operacao.txt",
+            "headers": {
+              "Content-Disposition": {
+                "description": "attachment; filename=\"downloads-agendados-<protocolo>.zip\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Na fila ou em processamento",
+            "headers": {
+              "Retry-After": {
+                "description": "Segundos para a próxima consulta",
+                "schema": {
+                  "type": "integer",
+                  "example": 10
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DownloadAgendadoStatus"
+                },
+                "example": {
+                  "protocolo": 4092,
+                  "status": "EM_PROCESSAMENTO",
+                  "mensagem": "Processamento em andamento. Consulte novamente em instantes."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT ausente, inválido ou expirado"
+          },
+          "404": {
+            "description": "Protocolo inexistente ou de empresa sem acesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DownloadAgendadoErro"
+                },
+                "example": {
+                  "mensagem": "Protocolo não encontrado.",
+                  "logs": [],
+                  "protocolo": 4092
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Concluído, mas o arquivo não está mais no servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DownloadAgendadoStatus"
+                },
+                "example": {
+                  "protocolo": 4092,
+                  "status": "CONCLUIDO",
+                  "mensagem": "Arquivo não está mais disponível no servidor. Gere um novo download."
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "A geração falhou",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DownloadAgendadoStatus"
+                },
+                "example": {
+                  "protocolo": 4092,
+                  "status": "ERRO",
+                  "mensagem": "<motivo da falha>"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -847,6 +1075,146 @@
           "NOTA64:": {
             "type": "string",
             "description": "PDF completo codificado em Base64."
+          }
+        }
+      },
+      "DownloadAgendadoRequest": {
+        "type": "object",
+        "required": [
+          "cnpj",
+          "modelo",
+          "data_inicio",
+          "data_fim"
+        ],
+        "properties": {
+          "cnpj": {
+            "type": "string",
+            "description": "CNPJ da empresa cadastrada no GSF (matriz), 14 dígitos, com ou sem máscara. Traz as notas de todos os estabelecimentos.",
+            "example": "22760852000110"
+          },
+          "modelo": {
+            "type": "string",
+            "enum": [
+              "NFE",
+              "NFST",
+              "NFSE",
+              "AMBAS",
+              "CTEOS",
+              "NFCOM"
+            ],
+            "description": "AMBAS = NF-e, NFS-e e NFST."
+          },
+          "data_inicio": {
+            "type": "string",
+            "description": "Data de emissão inicial: AAAA-MM-DD, DD-MM-AAAA ou DD/MM/AAAA.",
+            "example": "2026-09-01"
+          },
+          "data_fim": {
+            "type": "string",
+            "description": "Data de emissão final (≥ data_inicio). Período de no máximo 60 dias.",
+            "example": "2026-09-30"
+          },
+          "conteudo": {
+            "type": "string",
+            "enum": [
+              "XML",
+              "PDF",
+              "AMBOS"
+            ],
+            "default": "AMBOS"
+          },
+          "cod_status": {
+            "type": "integer",
+            "enum": [
+              100,
+              101,
+              102
+            ],
+            "nullable": true,
+            "description": "100 autorizada, 101 cancelada, 102 inutilizada. Omitido = todas."
+          }
+        }
+      },
+      "DownloadAgendadoAceito": {
+        "type": "object",
+        "required": [
+          "protocolo",
+          "status",
+          "consulta"
+        ],
+        "properties": {
+          "protocolo": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "NA_FILA",
+              "EM_PROCESSAMENTO",
+              "CONCLUIDO",
+              "ERRO"
+            ]
+          },
+          "consulta": {
+            "type": "string",
+            "description": "Path da consulta do protocolo."
+          }
+        }
+      },
+      "DownloadAgendadoStatus": {
+        "type": "object",
+        "required": [
+          "protocolo",
+          "status"
+        ],
+        "properties": {
+          "protocolo": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "NA_FILA",
+              "EM_PROCESSAMENTO",
+              "CONCLUIDO",
+              "ERRO"
+            ]
+          },
+          "mensagem": {
+            "type": "string"
+          }
+        }
+      },
+      "DownloadAgendadoErro": {
+        "type": "object",
+        "required": [
+          "mensagem"
+        ],
+        "properties": {
+          "mensagem": {
+            "type": "string"
+          },
+          "logs": {
+            "type": "array",
+            "items": {}
+          },
+          "protocolo": {
+            "type": "integer",
+            "description": "Presente no 404 e no 409."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "NA_FILA",
+              "EM_PROCESSAMENTO",
+              "CONCLUIDO",
+              "ERRO"
+            ],
+            "description": "Presente no 409."
+          },
+          "consulta": {
+            "type": "string",
+            "description": "Presente no 409."
           }
         }
       }

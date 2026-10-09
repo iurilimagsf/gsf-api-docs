@@ -1,0 +1,15 @@
+---
+title: "POST /api/v1/downloads-agendados/"
+description: "Pede a geração do ZIP de notas da empresa no período e devolve o protocolo."
+openapi: "openapi/public.json POST /api/v1/downloads-agendados/"
+---
+
+| Campo | Descrição |
+| --- | --- |
+| `cnpj` | CNPJ da empresa cadastrada no GSF (matriz), ex.: `22760852000110`. Traz também as filiais |
+| `modelo` | `NFE`, `NFST`, `NFSE`, `AMBAS`, `CTEOS` ou `NFCOM` |
+| `data_inicio` / `data_fim` | Período de emissão de no máximo 60 dias |
+| `conteudo` | `XML`, `PDF` ou `AMBOS` (padrão) |
+| `cod_status` | Opcional: `100`, `101` ou `102` |
+
+Guarde o `protocolo` do `202` (ou do `409`) e consulte em [`GET /api/v1/downloads-agendados/{protocolo}/`](/referencia/downloads-agendados-consultar).

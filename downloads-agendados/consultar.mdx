@@ -1,0 +1,143 @@
+---
+title: "Downloads Agendados — consultar e baixar"
+sidebarTitle: "Consultar e baixar"
+description: "Acompanha o protocolo e baixa o ZIP gerado em binário (application/zip)."
+---
+
+Consulte o pedido feito em [`/api/v1/downloads-agendados/`](/downloads-agendados/iniciar) pelo `protocolo`. Enquanto o arquivo é gerado, a resposta é `202`; quando termina, a própria resposta é o ZIP.
+
+## Endpoint
+
+```http
+GET /api/v1/downloads-agendados/{protocolo}/
+Authorization: JWT <token>
+```
+
+| Parâmetro | Tipo | Obrig. | Descrição |
+| --- | --- | --- | --- |
+| `protocolo` | integer (path) | Sim | Protocolo devolvido no `202` ou no `409` do envio |
+
+## Respostas
+
+### `200`
+
+Corpo **binário** do arquivo ZIP, sem Base64.
+
+| Header | Valor |
+| --- | --- |
+| `Content-Type` | `application/zip` |
+| `Content-Disposition` | `attachment; filename="downloads-agendados-<protocolo>.zip"` |
+
+O ZIP traz os XMLs, os PDFs e o `log-retorno-operacao.txt` com as notas que falharam.
+
+### `202`
+
+Ainda na fila ou em processamento. Aguarde o tempo do header `Retry-After` (em segundos) e consulte de novo.
+
+```json
+{
+  "protocolo": 4092,
+  "status": "EM_PROCESSAMENTO",
+  "mensagem": "Processamento em andamento. Consulte novamente em instantes."
+}
+```
+
+### `401`
+
+Token ausente, inválido ou expirado.
+
+### `404`
+
+Protocolo inexistente ou de uma empresa à qual o usuário não tem acesso.
+
+```json
+{
+  "mensagem": "Protocolo não encontrado.",
+  "logs": [],
+  "protocolo": 4092
+}
+```
+
+### `410`
+
+O processamento concluiu, mas o arquivo não está mais no servidor. Faça um novo pedido.
+
+```json
+{
+  "protocolo": 4092,
+  "status": "CONCLUIDO",
+  "mensagem": "Arquivo não está mais disponível no servidor. Gere um novo download."
+}
+```
+
+### `422`
+
+A geração falhou.
+
+```json
+{
+  "protocolo": 4092,
+  "status": "ERRO",
+  "mensagem": "<motivo da falha>"
+}
+```
+
+## Exemplos
+
+<CodeGroup>
+
+```bash cURL
+# Imprime o status HTTP: só 200 grava o ZIP; com 202 o arquivo contém o JSON de andamento
+curl --request GET \
+  --url https://hom.portalgsf.com.br/api/v1/downloads-agendados/4092/ \
+  --header 'Authorization: JWT <token>' \
+  --output downloads-agendados-4092.zip \
+  --write-out '%{http_code}\n'
+```
+
+```python Python
+import time
+import requests
+
+BASE = "https://hom.portalgsf.com.br"
+headers = {"Authorization": "JWT <token>"}
+
+while True:
+    r = requests.get(f"{BASE}/api/v1/downloads-agendados/4092/", headers=headers)
+    if r.status_code == 202:
+        time.sleep(int(r.headers.get("Retry-After", 10)))
+        continue
+    r.raise_for_status()
+    with open("downloads-agendados-4092.zip", "wb") as f:
+        f.write(r.content)
+    break
+```
+
+```javascript Node.js
+import { writeFile } from "node:fs/promises";
+
+const BASE = "https://hom.portalgsf.com.br";
+const headers = { Authorization: "JWT <token>" };
+
+while (true) {
+  const r = await fetch(`${BASE}/api/v1/downloads-agendados/4092/`, { headers });
+  if (r.status === 202) {
+    const espera = Number(r.headers.get("Retry-After") ?? 10);
+    await new Promise((ok) => setTimeout(ok, espera * 1000));
+    continue;
+  }
+  if (!r.ok) throw new Error(`${r.status}: ${await r.text()}`);
+  await writeFile("downloads-agendados-4092.zip", Buffer.from(await r.arrayBuffer()));
+  break;
+}
+```
+
+</CodeGroup>
+
+<Tip>
+No **Postman**, use **Send and Download** (seta ao lado de Send) ou, na resposta, **⋯ › Save response to file**. Sem isso, o ZIP aparece como texto ilegível.
+</Tip>
+
+<Warning>
+Trate a resposta como arquivo só quando o status for `200`. Nos demais casos o corpo é JSON.
+</Warning>
