@@ -1,0 +1,56 @@
+---
+title: "Formatos suportados"
+sidebarTitle: "Formatos suportados"
+description: "Formatos de JSON aceitos na integração SAP: NF-e, NFS-e e contabilização."
+---
+
+A API aceita os layouts de mensagem produzidos pelo SAP para os formatos abaixo. O body deve ser o JSON original, sem campos extras de controle.
+
+## Formatos
+
+| Valor em `categoria` | Formato |
+| --- | --- |
+| `nfe_entrada` | NF-e de entrada |
+| `nfe_saida` | NF-e de saída |
+| `nfse_entrada` | NFS-e de entrada |
+| `nfse_saida` | NFS-e de saída |
+| `contabilizacao` | Lançamento contábil |
+
+## NF-e
+
+Layout típico do SAP com cabeçalho fiscal (`isNfeHeader` + `isNfeIde`) e modelo **55** ou **65**.
+
+| Campo | Observação |
+| --- | --- |
+| `isNfeIde.mod` | `55` ou `65` |
+| `isNfeIde.tpNf` | `0` = entrada · `1` = saída |
+| `isNfeHeader.docnum` | Número do documento no SAP |
+| `isNfeHeader.accesskey` | Chave de acesso, quando presente |
+
+A validação exige os blocos principais do formato SAP de referência (cabeçalho, identificação e parceiros).
+
+<Note>
+Blocos de ISSQN dentro da NF-e **não** caracterizam o documento como NFS-e.
+</Note>
+
+## NFS-e
+
+Layouts de serviço do SAP (por exemplo blocos `isNfse*` / `itNfse*`, ou campos como número da NFS-e, RPS e código de verificação), distintos da NF-e modelo 55/65.
+
+A indicação de entrada ou saída segue os campos de operação presentes no payload (`tpNf`, `tpOperacao` ou equivalente).
+
+<Info>
+A validação detalhada de NFS-e evolui conforme os layouts reais do cliente.
+</Info>
+
+## Contabilização
+
+Layouts típicos de lançamento contábil (cabeçalho de documento FI, contas e itens de lançamento). Nesses casos o retorno utiliza `categoria: "contabilizacao"`.
+
+## Formato não reconhecido
+
+Se a estrutura não corresponder a nenhum formato suportado, a API responde `400` com a descrição do problema.
+
+<Card title="Exemplo NF-e de saída" icon="code" href="/integracao-sap/exemplo-nfe">
+Payload de referência com retorno `nfe_saida`.
+</Card>

@@ -1,0 +1,82 @@
+---
+title: "Visão geral"
+sidebarTitle: "Visão geral"
+description: "Como a API recebe e valida mensagens enviadas pelo SAP."
+---
+
+A API recebe o JSON gerado no SAP, valida a estrutura e armazena o conteúdo **integralmente**, sem alterar campos do payload.
+
+## Endpoints públicos
+
+| Operação | Path | Sucesso |
+| --- | --- | --- |
+| Enviar (S/4HANA) | `POST /api/v1/integrations/sap/s4hana/messages/` | `200` — `OK - REGISTRO RECEBIDO` |
+| Enviar (ECC) | `POST /api/v1/integrations/sap/ecc/messages/` | `200` — `OK - REGISTRO RECEBIDO` |
+
+Escolha o path de acordo com o sistema SAP utilizado no cliente. O body é sempre o JSON original.
+
+## O que acontece em cada envio
+
+<Steps>
+  <Step title="Recepção">
+    A API recebe o JSON com `Content-Type: application/json`.
+  </Step>
+  <Step title="Validação">
+    Confere se a estrutura corresponde a um formato suportado.
+  </Step>
+  <Step title="Armazenamento">
+    Grava o JSON completo para rastreabilidade e processamento posterior no GSF.
+  </Step>
+  <Step title="Confirmação">
+    Devolve `200` com a mensagem de aceite e o identificador do registro.
+  </Step>
+</Steps>
+
+## Resposta de sucesso
+
+```json
+{
+  "mensagem": "OK - REGISTRO RECEBIDO",
+  "id": 1001,
+  "categoria": "nfe_saida",
+  "layout": "J_1BNFE_OUTNFE_CREATE"
+}
+```
+
+| Campo | Descrição |
+| --- | --- |
+| `mensagem` | Confirmação textual para o SAP |
+| `id` | Identificador do registro no GSF |
+| `categoria` | Tipo do documento recebido |
+| `layout` | Layout SAP do payload (ex.: NF-e `J_1BNFE_OUTNFE_CREATE`) |
+
+## Tipos de documento
+
+| `categoria` | Significado |
+| --- | --- |
+| `nfe_entrada` | NF-e de entrada |
+| `nfe_saida` | NF-e de saída |
+| `nfse_entrada` | NFS-e de entrada |
+| `nfse_saida` | NFS-e de saída |
+| `contabilizacao` | Lançamento contábil |
+
+Detalhes dos formatos em [Formatos suportados](/integracao-sap/tipos-documento).
+
+## Boas práticas
+
+| Prática | Detalhe |
+| --- | --- |
+| Payload original | Envie o JSON exatamente como o SAP gera — sem remoção de blocos |
+| Trailing slash | Mantenha a `/` final no path |
+| Charset | Use `UTF-8` |
+| Retentativa | Em `503`, aguarde alguns segundos antes de reenviar |
+| Correlação | Guarde o `id` retornado junto ao `docnum` / chave do documento no SAP |
+
+<CardGroup cols={2}>
+  <Card title="Envio de mensagem" icon="paper-plane" href="/integracao-sap/envio">
+    Request, respostas e exemplos de chamada.
+  </Card>
+  <Card title="Exemplo NF-e" icon="code" href="/integracao-sap/exemplo-nfe">
+    JSON de referência de NF-e de saída.
+  </Card>
+</CardGroup>

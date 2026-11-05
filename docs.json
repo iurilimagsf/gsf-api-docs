@@ -177,6 +177,27 @@
             ]
           },
           {
+            "group": "Integração SAP",
+            "pages": [
+              {
+                "group": "Começar",
+                "pages": [
+                  "integracao-sap/index",
+                  "integracao-sap/autenticacao"
+                ]
+              },
+              {
+                "group": "Especificações",
+                "pages": [
+                  "integracao-sap/visao-geral",
+                  "integracao-sap/envio",
+                  "integracao-sap/tipos-documento",
+                  "integracao-sap/exemplo-nfe"
+                ]
+              }
+            ]
+          },
+          {
             "group": "API Playground",
             "pages": [
               {
@@ -184,6 +205,12 @@
                 "pages": [
                   "referencia/downloads-agendados-iniciar",
                   "referencia/downloads-agendados-consultar"
+                ]
+              },
+              {
+                "group": "Integração SAP",
+                "pages": [
+                  "referencia/sap-enviar"
                 ]
               }
             ]
@@ -226,7 +253,8 @@
       "method": "key",
       "name": "Authorization",
       "inputPrefix": "JWT "
-    }
+    },
+    "openapi": "openapi/public.json"
   },
   "navbar": {
     "links": [
@@ -273,6 +301,14 @@
     {
       "source": "/comecar",
       "destination": "/integracao"
+    },
+    {
+      "source": "/integracao-sap/categorias",
+      "destination": "/integracao-sap/tipos-documento"
+    },
+    {
+      "source": "/referencia/erp-messages",
+      "destination": "/referencia/sap-enviar"
     }
   ]
 }

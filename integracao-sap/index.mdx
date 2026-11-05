@@ -1,0 +1,87 @@
+---
+title: "Integração SAP"
+sidebarTitle: "Introdução"
+description: "Especificações técnicas para envio de documentos fiscais e lançamentos do SAP à API GSF Soluções."
+---
+
+<Info>
+**Ambiente de homologação:** `https://hom.portalgsf.com.br` · Prefixo público: `/api/v1/` · Homologação **não** gera documento com valor fiscal.
+</Info>
+
+Documentação técnica da **integração SAP → GSF**. O SAP envia o JSON do documento (ou lançamento) para a API; o GSF valida a estrutura e confirma o recebimento.
+
+## O que esta API faz
+
+<CardGroup cols={2}>
+  <Card title="Receber documentos" icon="file-import" href="/integracao-sap/envio">
+    Aceita o JSON original gerado no SAP e confirma o registro no GSF.
+  </Card>
+  <Card title="Formatos suportados" icon="file-code" href="/integracao-sap/tipos-documento">
+    NF-e, NFS-e e lançamentos contábeis no layout produzido pelo SAP.
+  </Card>
+</CardGroup>
+
+## Base e autenticação
+
+| Item | Valor |
+| --- | --- |
+| BASE (homologação) | `https://hom.portalgsf.com.br` |
+| Prefixo | `/api/v1/` |
+| Trailing slash | Obrigatório |
+| Auth | `Authorization: JWT <token>` |
+| Content-Type | `application/json; charset=UTF-8` |
+
+<Warning>
+O header de autenticação usa o prefixo **`JWT`**, não `Bearer`.
+</Warning>
+
+Detalhes em [Autenticação](/integracao-sap/autenticacao).
+
+## Endpoints
+
+| Método | Path | Função |
+| --- | --- | --- |
+| `POST` | `/api/v1/auth/token/` | Obter token JWT |
+| `POST` | `/api/v1/integrations/sap/s4hana/messages/` | Enviar mensagem (SAP S/4HANA) |
+| `POST` | `/api/v1/integrations/sap/ecc/messages/` | Enviar mensagem (SAP ECC) |
+
+Use o path correspondente ao sistema SAP do ambiente. O conteúdo do body é o **mesmo JSON** produzido pelo SAP.
+
+## Fluxo recomendado
+
+<Steps>
+  <Step title="Autentique">
+    Obtenha o JWT em `/api/v1/auth/token/` com o usuário técnico de integração.
+  </Step>
+  <Step title="Envie o JSON">
+    Faça `POST` no endpoint SAP do seu ambiente, com o payload original e `Authorization: JWT <token>`.
+  </Step>
+  <Step title="Confirme o retorno">
+    Em sucesso, a API responde `200` com `mensagem: "OK - REGISTRO RECEBIDO"` e o identificador do registro.
+  </Step>
+  <Step title="Trate rejeições">
+    Em `400`, corrija o JSON conforme a mensagem e reenvie. Em `401`, renove o token.
+  </Step>
+</Steps>
+
+## Códigos HTTP
+
+| HTTP | Significado | O que fazer |
+| --- | --- | --- |
+| `200` | Registro recebido e armazenado | Guarde o `id` retornado para rastreio |
+| `400` | Estrutura inválida ou formato não suportado | Ajuste o payload e reenvie |
+| `401` | Token ausente, inválido ou expirado | Gere um token novo |
+| `503` | Indisponibilidade temporária de gravação | Aguarde e tente novamente; se persistir, contate o suporte |
+
+<Tip>
+Na aba **API Playground**, o Try-it executa contra a homologação. Autentique-se primeiro e use `Authorization: JWT <token>`.
+</Tip>
+
+<CardGroup cols={2}>
+  <Card title="Visão geral" icon="book-open" href="/integracao-sap/visao-geral">
+    Regras de negócio, respostas e boas práticas.
+  </Card>
+  <Card title="Exemplo NF-e" icon="code" href="/integracao-sap/exemplo-nfe">
+    Payload de referência de NF-e de saída.
+  </Card>
+</CardGroup>

@@ -31,6 +31,10 @@
     {
       "name": "DownloadsAgendados",
       "description": "Geração e download em ZIP dos XMLs e PDFs das notas de uma empresa por período."
+    },
+    {
+      "name": "IntegracaoSAP",
+      "description": "Recebimento de documentos e lançamentos enviados pelo SAP."
     }
   ],
   "paths": {
@@ -949,6 +953,183 @@
           }
         }
       }
+    },
+    "/api/v1/integrations/sap/s4hana/messages/": {
+      "post": {
+        "tags": [
+          "IntegracaoSAP"
+        ],
+        "summary": "Receber mensagem do SAP S/4HANA",
+        "description": "Recebe o JSON original gerado no SAP S/4HANA, valida a estrutura e confirma o recebimento com `OK - REGISTRO RECEBIDO`.",
+        "operationId": "receberMensagemSapS4Hana",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SapMensagemRequest"
+              },
+              "example": {
+                "isNfeHeader": {
+                  "rfcVersion": "4.00",
+                  "docnum": "0000123456",
+                  "accesskey": "35261012345678000190550010001234561234567890",
+                  "logsys": "PRDCLNT100",
+                  "waers": "BRL",
+                  "drc": "0"
+                },
+                "isNfeIde": {
+                  "mod": "55",
+                  "tpNf": "1",
+                  "natOp": "VENDA DE MERCADORIA",
+                  "serie": "1",
+                  "nNf": "123456",
+                  "dhEmi": "20261029103000"
+                },
+                "isNfePartnerIds": {
+                  "partnerIdEmit": "000001",
+                  "partnerIdDest": "000002"
+                },
+                "itNfePartner": [
+                  {
+                    "id": "000001",
+                    "cnpj": "12345678000190",
+                    "xNome": "EMITENTE EXEMPLO LTDA"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Registro recebido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SapMensagemOk"
+                },
+                "example": {
+                  "mensagem": "OK - REGISTRO RECEBIDO",
+                  "id": 1001,
+                  "categoria": "nfe_saida",
+                  "layout": "J_1BNFE_OUTNFE_CREATE"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Estrutura inválida ou tipo não reconhecido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SapMensagemErro"
+                },
+                "example": {
+                  "mensagem": "Layout não suportado: estrutura JSON não corresponde a NFe, NFSe ou contabilização."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT ausente, inválido ou expirado"
+          },
+          "503": {
+            "description": "Indisponibilidade temporária ao gravar o registro",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SapMensagemErro"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/sap/ecc/messages/": {
+      "post": {
+        "tags": [
+          "IntegracaoSAP"
+        ],
+        "summary": "Receber mensagem do SAP ECC",
+        "description": "Mesmo comportamento do endpoint S/4HANA, para ambientes SAP ECC. Sucesso retorna `OK - REGISTRO RECEBIDO`.",
+        "operationId": "receberMensagemSapEcc",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SapMensagemRequest"
+              },
+              "example": {
+                "isNfeHeader": {
+                  "rfcVersion": "4.00",
+                  "docnum": "0000123456",
+                  "accesskey": "35261012345678000190550010001234561234567890",
+                  "logsys": "PRDCLNT100",
+                  "waers": "BRL",
+                  "drc": "0"
+                },
+                "isNfeIde": {
+                  "mod": "55",
+                  "tpNf": "1",
+                  "natOp": "VENDA DE MERCADORIA",
+                  "serie": "1",
+                  "nNf": "123456",
+                  "dhEmi": "20261029103000"
+                },
+                "isNfePartnerIds": {
+                  "partnerIdEmit": "000001",
+                  "partnerIdDest": "000002"
+                },
+                "itNfePartner": [
+                  {
+                    "id": "000001",
+                    "cnpj": "12345678000190",
+                    "xNome": "EMITENTE EXEMPLO LTDA"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Registro recebido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SapMensagemOk"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Estrutura inválida ou tipo não reconhecido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SapMensagemErro"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT ausente, inválido ou expirado"
+          },
+          "503": {
+            "description": "Indisponibilidade temporária ao gravar o registro",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SapMensagemErro"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1215,6 +1396,78 @@
           "consulta": {
             "type": "string",
             "description": "Presente no 409."
+          }
+        }
+      },
+      "SapMensagemOk": {
+        "type": "object",
+        "required": [
+          "mensagem",
+          "id",
+          "categoria",
+          "layout"
+        ],
+        "properties": {
+          "mensagem": {
+            "type": "string",
+            "example": "OK - REGISTRO RECEBIDO"
+          },
+          "id": {
+            "type": "integer",
+            "description": "Identificador do registro no GSF."
+          },
+          "categoria": {
+            "type": "string",
+            "enum": [
+              "nfe_entrada",
+              "nfe_saida",
+              "nfse_entrada",
+              "nfse_saida",
+              "contabilizacao"
+            ],
+            "description": "Tipo do documento recebido."
+          },
+          "layout": {
+            "type": "string",
+            "example": "J_1BNFE_OUTNFE_CREATE",
+            "description": "Layout SAP do payload."
+          }
+        }
+      },
+      "SapMensagemErro": {
+        "type": "object",
+        "required": [
+          "mensagem"
+        ],
+        "properties": {
+          "mensagem": {
+            "type": "string"
+          }
+        }
+      },
+      "SapMensagemRequest": {
+        "type": "object",
+        "description": "JSON original produzido pelo SAP (estrutura varia conforme o layout).",
+        "additionalProperties": true,
+        "properties": {
+          "isNfeHeader": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "isNfeIde": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "isNfePartnerIds": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "itNfePartner": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
           }
         }
       }

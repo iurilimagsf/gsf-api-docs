@@ -1,0 +1,81 @@
+---
+title: "Envio de mensagem"
+sidebarTitle: "Envio"
+description: "Como o SAP deve enviar o JSON para a API GSF Soluções."
+---
+
+Envia o JSON do documento ou lançamento produzido no SAP. Em sucesso, a API confirma o recebimento imediatamente.
+
+## Endpoint (S/4HANA)
+
+```http
+POST /api/v1/integrations/sap/s4hana/messages/
+Authorization: JWT <token>
+Content-Type: application/json
+```
+
+## Endpoint (ECC)
+
+```http
+POST /api/v1/integrations/sap/ecc/messages/
+Authorization: JWT <token>
+Content-Type: application/json
+```
+
+## Request
+
+| Item | Regra |
+| --- | --- |
+| Body | Objeto JSON (não envie lista na raiz) |
+| Conteúdo | Payload original do SAP, sem transformação |
+| Auth | Header `Authorization: JWT <token>` |
+
+Não há campos extras obrigatórios além do próprio JSON do SAP.
+
+## Respostas
+
+### `200` — registro recebido
+
+```json
+{
+  "mensagem": "OK - REGISTRO RECEBIDO",
+  "id": 1001,
+  "categoria": "nfe_saida",
+  "layout": "J_1BNFE_OUTNFE_CREATE"
+}
+```
+
+### `400` — rejeição de validação
+
+```json
+{
+  "mensagem": "Layout NFe inválido: isNfeIde.tpNf deve ser 0 (entrada) ou 1 (saída)."
+}
+```
+
+Causas comuns:
+
+- JSON incompleto para o tipo identificado
+- Estrutura não reconhecida como NF-e, NFS-e ou contabilização
+- Body em formato de lista
+
+### `401` — autenticação
+
+Token ausente, inválido ou expirado. Renove em `/api/v1/auth/token/`.
+
+### `503` — indisponibilidade
+
+Falha temporária ao gravar. Reenvie após breve intervalo.
+
+## Exemplo com cURL
+
+```bash
+curl -X POST 'https://hom.portalgsf.com.br/api/v1/integrations/sap/s4hana/messages/' \
+  -H 'Authorization: JWT <token>' \
+  -H 'Content-Type: application/json' \
+  --data-binary @mensagem_sap.json
+```
+
+## Playground
+
+Use a operação interativa em [Receber mensagem SAP](/referencia/sap-enviar).

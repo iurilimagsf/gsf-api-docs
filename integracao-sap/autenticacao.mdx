@@ -1,0 +1,70 @@
+---
+title: "Autenticação — Integração SAP"
+sidebarTitle: "Autenticação"
+description: "Como obter e usar o token JWT nas chamadas da integração SAP."
+---
+
+Todas as operações da integração SAP exigem um token JWT. Apenas a emissão do token é anônima.
+
+## Obter o token
+
+```http
+POST /api/v1/auth/token/
+Content-Type: application/json
+```
+
+| Campo | Tipo | Obrigatório | Descrição |
+| --- | --- | --- | --- |
+| `username` | string | Sim | Usuário técnico de integração |
+| `password` | string | Sim | Senha do usuário |
+
+```json
+{
+  "username": "<usuario_integracao>",
+  "password": "<senha>"
+}
+```
+
+### Resposta `200`
+
+```json
+{
+  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+}
+```
+
+## Usar o token
+
+Em todas as chamadas de envio de mensagem:
+
+```http
+Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...
+```
+
+<Warning>
+Não utilize `Bearer`. O valor correto começa com `JWT`, seguido de um espaço e do token.
+</Warning>
+
+## Validade
+
+| Item | Valor |
+| --- | --- |
+| Algoritmo | HS256 |
+| Validade | 24 horas |
+| Refresh | Não disponível |
+| Renovação | Nova chamada a `/api/v1/auth/token/` |
+
+Ao receber `401`, descarte o token atual, autentique novamente e repita a operação **uma vez**.
+
+## Exemplo
+
+```bash
+curl -X POST 'https://hom.portalgsf.com.br/api/v1/auth/token/' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "username": "<usuario_integracao>",
+    "password": "<senha>"
+  }'
+```
+
+A documentação geral de autenticação da API GSF também está em [Autenticação](/autenticacao).

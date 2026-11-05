@@ -1,0 +1,79 @@
+---
+title: "Exemplo — NF-e"
+sidebarTitle: "Exemplo NF-e"
+description: "Payload de referência de NF-e de saída enviado pelo SAP."
+---
+
+Exemplo de NF-e de **saída** (`mod = 55`, `tpNf = 1`).
+
+## Chamada
+
+```http
+POST /api/v1/integrations/sap/s4hana/messages/
+Authorization: JWT <token>
+Content-Type: application/json
+```
+
+## Body (resumido)
+
+```json
+{
+  "isNfeHeader": {
+    "rfcVersion": "4.00",
+    "docnum": "0000123456",
+    "accesskey": "35261012345678000190550010001234561234567890",
+    "logsys": "PRDCLNT100",
+    "waers": "BRL",
+    "drc": "0"
+  },
+  "isNfePartnerIds": {
+    "partnerIdEmit": "000001",
+    "partnerIdDest": "000002"
+  },
+  "itNfePartner": [
+    {
+      "id": "000001",
+      "cnpj": "12345678000190",
+      "xNome": "EMITENTE EXEMPLO LTDA"
+    },
+    {
+      "id": "000002",
+      "cnpj": "98765432000110",
+      "xNome": "DESTINATARIO EXEMPLO SA"
+    }
+  ],
+  "isNfeIde": {
+    "cUf": "35",
+    "natOp": "VENDA DE MERCADORIA",
+    "mod": "55",
+    "serie": "1",
+    "nNf": "123456",
+    "dhEmi": "20261029103000",
+    "tpNf": "1",
+    "tpAmb": "2",
+    "finNfe": "1"
+  }
+}
+```
+
+## Resposta esperada
+
+```json
+{
+  "mensagem": "OK - REGISTRO RECEBIDO",
+  "id": 1001,
+  "categoria": "nfe_saida",
+  "layout": "J_1BNFE_OUTNFE_CREATE"
+}
+```
+
+## Variações
+
+| Objetivo | Ajuste no JSON |
+| --- | --- |
+| NF-e de entrada | `isNfeIde.tpNf = "0"` |
+| Ambiente de produção no documento | `isNfeIde.tpAmb = "1"` |
+
+<Tip>
+O exemplo acima é ilustrativo. Em produção, envie o JSON completo gerado pelo SAP, incluindo impostos, itens e demais blocos.
+</Tip>
