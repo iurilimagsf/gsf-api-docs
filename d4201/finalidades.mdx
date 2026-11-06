@@ -4,7 +4,7 @@ sidebarTitle: "Finalidades"
 description: "ORIGINAL, DEVOLUCAO e CANCELAMENTO no recebimento D-4201."
 ---
 
-`finalidade` vai na raiz, em maiúsculas. Não envie `finEvt` no corpo de negócio: o servidor o produz depois, no payload técnico.
+`finalidade` vai na raiz, em maiúsculas. Não envie `finEvt` no JSON.
 
 | `finalidade` | Referências no JSON | `finEvt` posterior |
 | --- | --- | --- |
@@ -12,18 +12,17 @@ description: "ORIGINAL, DEVOLUCAO e CANCELAMENTO no recebimento D-4201."
 | `DEVOLUCAO` | `chave_referencia` no grupo e `sequencia_referencia` em cada operação. | `31` |
 | `CANCELAMENTO` | As mesmas referências da devolução. | `41` |
 
-## Conferência da referência
+## Referência
 
-Para devolução e cancelamento, o banco exige referência na mesma empresa e no mesmo ambiente, vinculada a um D-4201 original oficialmente **APROVADO**, com recibo real e sequência existente.
+Devolução e cancelamento exigem `chave_referencia` e `sequencia_referencia` de um D-4201 original com status aprovado, na mesma empresa e no mesmo ambiente.
 
 | Situação | Resultado |
 | --- | --- |
-| Chave com 53 caracteres sem histórico aprovado | Rejeitada |
-| Recibo simulado com prefixo `HOM-` ou `SIM-` | Não satisfaz a conferência |
+| Chave com 53 caracteres sem original aprovado | Rejeitada |
 | Sequência inexistente no original aprovado | Rejeitada |
-| Código `REFERENCE_NOT_OFFICIALLY_APPROVED` | Falha de referência fiscal, não de permissão de menu |
+| Código `REFERENCE_NOT_OFFICIALLY_APPROVED` | A referência não aponta para um original aprovado |
 
-Os exemplos de devolução e cancelamento desta documentação são estruturais. Eles não demonstram recepção homologada e não passam pela conferência sem um original real aprovado no banco. Não crie status nem recibo artificial para contornar a validação.
+Os exemplos de devolução e cancelamento mostram só a estrutura. O envio real depende de um original aprovado.
 
 ## Devolução (estrutura)
 

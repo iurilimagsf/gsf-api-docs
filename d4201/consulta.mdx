@@ -40,14 +40,10 @@ curl --fail-with-body \
 
 ## Geração do XML
 
-A recepção não gera XML automaticamente. A geração posterior é explícita, pela tela ou pelo endpoint de geração. O fluxo atual armazena novos XMLs como `VALIDADO`, sem assinatura, enfileiramento ou transmissão automática.
+A recepção não gera XML automaticamente. A geração é uma etapa posterior, pela tela ou pelo endpoint de geração.
 
-O leiaute `v0_0_1` é preliminar. A existência dele não autoriza envio em produção.
-
-<Warning>
-Se a consulta ou a aba não mostrar o lote, confira empresa selecionada, vínculo do usuário e configuração DeRE. Ausência de tabela não se resolve liberando um menu. `REFERENCE_NOT_OFFICIALLY_APPROVED` trata de referência fiscal, não de permissão de tela.
-</Warning>
+Se a consulta não devolver o lote, confira o `empresa_id` e o acesso do usuário a essa empresa.
 
 <Card title="Visão geral" icon="file-invoice" href="/d4201">
-Fluxo de recebimento e liberação de acesso.
+Fluxo de recebimento do JSON.
 </Card>

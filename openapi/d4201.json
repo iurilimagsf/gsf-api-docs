@@ -3,7 +3,7 @@
   "info": {
     "title": "GSF Soluções — D-4201",
     "version": "1.0.0",
-    "description": "Recebimento do JSON de apostas D-4201.\n\nContrato conferido em 06/11/2026 no checkout homologacaoNovoTemplate, commit 348dd2ec9447f5fb9755c8aba29c61ab8e766593.\n\nA base é a instalação GSF da integração. O servidor abaixo é a homologação usada no restante desta documentação quando o contrato estiver publicado nesse host.\n\nPrefixo de autorização: `JWT` (não Bearer)."
+    "description": "Recebimento do JSON de apostas D-4201.\n\nPrefixo de autorização: `JWT` (não Bearer)."
   },
   "servers": [
     {
@@ -110,7 +110,7 @@
             "description": "JSON, UTF-8, estrutura ou chaves duplicadas inválidas"
           },
           "401": {
-            "description": "JWT ausente, inválido ou expirado. A autenticação DRF pode responder antes do envelope D-4201."
+            "description": "JWT ausente, inválido ou expirado."
           },
           "403": {
             "description": "Usuário inativo ou empresa não autorizada (COMPANY_FORBIDDEN)"
@@ -416,7 +416,7 @@
       "D4201PontoVenda": {
         "type": "object",
         "additionalProperties": false,
-        "description": "A borda REST aceita apenas cpf ou cnpj. Não envie municipio neste objeto.",
+        "description": "Aceita apenas cpf ou cnpj. Não envie municipio neste objeto.",
         "properties": {
           "cpf": {
             "type": "string",

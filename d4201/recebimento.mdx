@@ -33,7 +33,7 @@ O cabeçalho é obrigatório. Ele identifica uma requisição imutável.
 | Mesma chave e conteúdo diferente | HTTP `409` |
 | Novo envio aceito | HTTP `201`, `replay: false`, status `RECEBIDO` |
 
-Dados já aceitos não são sobrescritos com uma chave nova. Não há `PATCH` nem `DELETE` do staging nesta API.
+Dados já aceitos não são sobrescritos com uma chave nova. Esta API não oferece `PATCH` nem `DELETE` do recebimento.
 
 ## Enquadramento do corpo
 
@@ -47,9 +47,9 @@ O servidor precisa de comprimento ou delimitação confiável. Use um cliente qu
 | Operações por grupo | 1 a 999 |
 | Operações somadas no POST | até 1.000 |
 | Corpo JSON UTF-8 | 8 MiB |
-| Profundidade do parser | 24 |
-| Itens por coleção | 1.000 |
-| Nós no documento | 100.000 |
+| Profundidade do JSON | 24 |
+| Itens por lista | 1.000 |
+| Total de elementos | 100.000 |
 
 Divida a massa em requisições de grupos completos, com identificadores estáveis. Não fragmente o mesmo grupo para acrescentar operações depois do aceite. JSON malformado, UTF-8 inválido, chaves duplicadas e estruturas fora desses limites são rejeitados.
 

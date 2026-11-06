@@ -35,7 +35,7 @@ Recebimento novo retorna HTTP `201`. Replay da mesma chave e do mesmo conteúdo 
 | `preliminar` | `true` enquanto o leiaute `v0_0_1` for preliminar |
 | `versao_tela` | Versão de tela do fluxo. O exemplo ilustra `1`. |
 
-## Erro da borda D-4201
+## Erro
 
 ```json
 {
@@ -52,9 +52,9 @@ Recebimento novo retorna HTTP `201`. Replay da mesma chave e do mesmo conteúdo 
 }
 ```
 
-`issues` pode ser omitido. A resposta HTTP expõe até 20 críticas, apesar de o limite interno ser 100. Os índices dos caminhos começam em 1. A notação não é um JSON Pointer estrito.
+`issues` pode ser omitido. A resposta traz até 20 críticas. Os índices dos caminhos começam em 1.
 
-A autenticação do DRF pode responder antes da guarda de negócio. Nem todo HTTP `401` usa este envelope.
+Um HTTP `401` de autenticação pode vir sem este envelope.
 
 ## Códigos HTTP
 
@@ -68,7 +68,7 @@ A autenticação do DRF pode responder antes da guarda de negócio. Nem todo HTT
 | `411` | Corpo sem comprimento ou delimitação confiável |
 | `413` | Corpo acima do teto |
 | `422` | Versão, campo, documento, chave, data, referência ou quantidade incompatível |
-| `503` | Configuração DeRE ausente ou inativa, ou armazenamento/aplicação indisponível |
+| `503` | Configuração DeRE ausente ou inativa, ou serviço indisponível |
 
 ## Códigos de negócio relevantes para acesso
 
@@ -76,8 +76,8 @@ A autenticação do DRF pode responder antes da guarda de negócio. Nem todo HTT
 | --- | --- |
 | `COMPANY_FORBIDDEN` | Vínculo empresarial insuficiente |
 | `COMPANY_CONFIG_MISSING` | Configuração DeRE ausente ou inativa |
-| `REFERENCE_NOT_OFFICIALLY_APPROVED` | Referência fiscal sem original aprovado. Não é permissão de menu. |
-| `INVALID_REQUEST` | A borda rejeitou a requisição e nada foi persistido |
+| `REFERENCE_NOT_OFFICIALLY_APPROVED` | Referência sem original aprovado |
+| `INVALID_REQUEST` | A requisição foi rejeitada e nada foi gravado |
 | `INVALID_FIELD` | Campo incompatível com o contrato. Leia `path`. |
 
 Em `409`, confira `code` antes de repetir. Em `401`, troque o token e mantenha a chave de idempotência.

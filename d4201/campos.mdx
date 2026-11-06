@@ -15,8 +15,8 @@ Não envie `ambiente` na raiz. Ele vem da configuração DeRE da empresa e não 
 | `versao` | inteiro JSON | Sim | Envie `1`, sem aspas. `true`, `1.0` e `"1"` são inválidos. |
 | `empresa_id` | inteiro JSON positivo | Sim | ID interno da empresa autorizada para o usuário do JWT. Envie `10`, não `"10"`. Não é o CNPJ. |
 | `origem` | texto | Sim | 1 a 30 caracteres: letras, números e `._:-`. Ex.: `ERP_APOSTAS`. Sem espaço, acento ou barra. |
-| `competencia` | texto | Sim | `AAAA-MM`. O normalizador vigente aceita anos 2000–2099 e meses `01`–`12`. |
-| `finalidade` | texto | Sim | `ORIGINAL`, `DEVOLUCAO` ou `CANCELAMENTO`, em maiúsculas. O servidor converte para a finalidade técnica do XML. |
+| `competencia` | texto | Sim | `AAAA-MM`, anos 2000–2099 e meses `01`–`12`. |
+| `finalidade` | texto | Sim | `ORIGINAL`, `DEVOLUCAO` ou `CANCELAMENTO`, em maiúsculas. |
 | `grupos` | lista | Sim | 1 a 100 objetos. Todos pertencem à empresa, competência e finalidade daquele envio. |
 
 ## Grupo (`grupos[]`)
@@ -59,9 +59,9 @@ A sequência nova das operações é atribuída pelo servidor conforme a ordem d
 
 ## O que não enviar
 
-Não envie XML, assinatura, namespace, `ambiente` / `tpAmb`, inscrição do emissor, `aplicEmi`, `verAplic`, `codBC`, `status`, `lote`, `id_evento`, `recibo`, `fila`, `finEvt` nem comandos de worker ou transmissão.
+Não envie XML, assinatura, `ambiente`, `tpAmb`, `status`, `lote`, `recibo`, `finEvt` nem qualquer campo fora das tabelas acima.
 
-O GSF fornece os metadados técnicos. O endpoint rejeita campos desconhecidos, inclusive tentativa de transportar informação de XML em campo adicional.
+O endpoint rejeita campos desconhecidos.
 
 <CardGroup cols={2}>
   <Card title="Apostador e PDV" icon="user" href="/d4201/apostador">
