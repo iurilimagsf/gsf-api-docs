@@ -1,0 +1,9 @@
+---
+title: "POST /api/v1/dere/d4201/recebimentos/"
+description: "Recebe o JSON de apostas D-4201 e grava o staging local."
+openapi: "openapi/d4201.json POST /api/v1/dere/d4201/recebimentos/"
+---
+
+Envie `Authorization: JWT <token>` e o cabeçalho `Idempotency-Key`. `201` é recebimento novo. `200` com `replay: true` é a mesma requisição repetida.
+
+O corpo de exemplo é sintético. `RECEBIDO` não é autorização fiscal.

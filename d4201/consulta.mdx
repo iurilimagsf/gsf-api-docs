@@ -1,0 +1,53 @@
+---
+title: "D-4201 — consulta e tela"
+sidebarTitle: "Consulta e tela"
+description: "Consulta do protocolo D-4201 pela API e acompanhamento na aba Apostas."
+---
+
+Depois do `POST` aceito, selecione a mesma empresa no GSF e consulte o protocolo na aba **Apostas — D-4201**.
+
+A aba lê os dados já recebidos e permite a geração posterior do XML. Ela não recebe o JSON, não cadastra credenciais e não autoriza o evento.
+
+## Consultas autorizadas
+
+Substitua `123` pelo `id_recebimento` e `10` pelo `empresa_id` do envio.
+
+```http
+GET /api/v1/dere/d4201/recebimentos/123/?empresa_id=10
+Authorization: JWT <TOKEN_DO_GSF>
+Accept: application/json
+```
+
+```http
+GET /api/v1/dere/d4201/grupos/?empresa_id=10&id_recebimento=123&limite=50
+Authorization: JWT <TOKEN_DO_GSF>
+Accept: application/json
+```
+
+| Parâmetro | Onde | Descrição |
+| --- | --- | --- |
+| `id` | path do recebimento | `id_recebimento` devolvido no aceite |
+| `empresa_id` | query | ID interno da empresa autorizada, o mesmo inteiro do JSON |
+| `id_recebimento` | query dos grupos | Protocolo cujos grupos serão listados |
+| `limite` | query dos grupos | Tamanho da página. O exemplo usa `50`. |
+
+```bash
+curl --fail-with-body \
+  -H "Authorization: JWT ${GSF_JWT_TOKEN}" \
+  -H "Accept: application/json" \
+  "${GSF_BASE_URL}/api/v1/dere/d4201/recebimentos/123/?empresa_id=10"
+```
+
+## Geração do XML
+
+A recepção não gera XML automaticamente. A geração posterior é explícita, pela tela ou pelo endpoint de geração. O fluxo atual armazena novos XMLs como `VALIDADO`, sem assinatura, enfileiramento ou transmissão automática.
+
+O leiaute `v0_0_1` é preliminar. A existência dele não autoriza envio em produção.
+
+<Warning>
+Se a consulta ou a aba não mostrar o lote, confira empresa selecionada, vínculo do usuário e configuração DeRE. Ausência de tabela não se resolve liberando um menu. `REFERENCE_NOT_OFFICIALLY_APPROVED` trata de referência fiscal, não de permissão de tela.
+</Warning>
+
+<Card title="Visão geral" icon="file-invoice" href="/d4201">
+Fluxo de recebimento e liberação de acesso.
+</Card>

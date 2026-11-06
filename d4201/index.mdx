@@ -1,0 +1,72 @@
+---
+title: "D-4201 — visão geral"
+sidebarTitle: "Visão geral"
+description: "Recebimento do JSON de apostas D-4201 e o que a liberação de acesso no GSF cobre."
+---
+
+O sistema de origem envia o JSON de apostas para o GSF. A aba **Apostas — D-4201** consulta o que já foi recebido e permite gerar o XML depois. Essa aba não recebe o JSON, não cadastra credenciais e não tem botão de autorização.
+
+<Info>
+Contrato conferido em 06/11/2026 no checkout `homologacaoNovoTemplate`, commit `348dd2ec9447f5fb9755c8aba29c61ab8e766593`. A URL base é a da instalação GSF da integração. Esta documentação descreve o contrato; não comprova que um domínio, um usuário ou um endpoint externo já esteja publicado.
+</Info>
+
+## O que a API faz
+
+<Steps>
+  <Step title="Autenticar">
+    Obtenha um JWT do GSF em `POST /api/v1/auth/token/`. O token da Receita/Integra, usado na mensageria, não serve neste endpoint.
+  </Step>
+  <Step title="Receber o lote">
+    Envie `POST /api/v1/dere/d4201/recebimentos/` com `Idempotency-Key`. O aceite grava o staging local com status `RECEBIDO`.
+  </Step>
+  <Step title="Acompanhar">
+    Consulte o protocolo pela API ou na aba **Apostas — D-4201**, na mesma empresa do envio.
+  </Step>
+  <Step title="Gerar o XML">
+    A recepção não gera XML. A geração é explícita, pela tela ou pelo endpoint de geração. O fluxo atual armazena o XML novo como `VALIDADO`, sem assinatura, enfileiramento ou transmissão automática.
+  </Step>
+</Steps>
+
+<Warning>
+Recepção local não é autorização fiscal. O `POST` não devolve XML, recibo oficial nem aprovação. O leiaute `evtIdApostPrem-v0_0_1.xsd` é preliminar e a existência dele não autoriza envio em produção.
+</Warning>
+
+## Endpoints
+
+| Operação | Path público | Sucesso |
+| --- | --- | --- |
+| Obter JWT | `POST /api/v1/auth/token/` | `200` com `token` |
+| Receber lote | `POST /api/v1/dere/d4201/recebimentos/` | `201` novo · `200` replay |
+| Consultar recebimento | `GET /api/v1/dere/d4201/recebimentos/{id}/` | Consulta autorizada |
+| Consultar grupos | `GET /api/v1/dere/d4201/grupos/` | Consulta autorizada |
+
+O alias legado, quando a mesma aplicação o publica, troca o prefixo `/api/v1/` por `/api-boss/v1/`. Há também a rota legada de token `POST /api/api-token-auth/`.
+
+## Liberação de acesso
+
+A funcionalidade já publicada depende da estrutura D-4201 e da configuração DeRE instaladas. Liberar um menu não cria tabela ausente, não vincula empresa e não ativa a configuração.
+
+| Situação | O que conferir |
+| --- | --- |
+| `401` | JWT ausente, inválido ou expirado. Obtenha outro token. Mantenha a mesma `Idempotency-Key` do recebimento. |
+| `403` / `COMPANY_FORBIDDEN` | Usuário inativo ou sem vínculo com a empresa. Conferir **Ativo** e a relação **Empresas**. |
+| `503` / `COMPANY_CONFIG_MISSING` | Configuração DeRE ausente ou inativa. O ambiente não vai no JSON: ele vem dessa configuração. |
+| `REFERENCE_NOT_OFFICIALLY_APPROVED` | Referência fiscal de devolução ou cancelamento sem original aprovado. Não é permissão de menu. |
+| Aba sem dados | A aba só lê o que o `POST` já gravou. Ela não substitui a integração. |
+
+Nomes e IDs efetivos de grupos, menus, empresas e políticas precisam ser conferidos pelo administrador no ambiente. Esta documentação não altera usuários, grupos, vínculos, credenciais nem permissões.
+
+<CardGroup cols={2}>
+  <Card title="Autenticação" icon="key" href="/d4201/autenticacao">
+    JWT do GSF, validade e o que não entra no token.
+  </Card>
+  <Card title="Recebimento" icon="paper-plane" href="/d4201/recebimento">
+    Cabeçalhos, idempotência, volume e retentativa.
+  </Card>
+  <Card title="Campos" icon="list" href="/d4201/campos">
+    Raiz, grupo e operação aceitos pelo contrato.
+  </Card>
+  <Card title="Respostas" icon="code" href="/d4201/respostas">
+    Envelope de aceite e códigos HTTP.
+  </Card>
+</CardGroup>

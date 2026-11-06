@@ -1,0 +1,91 @@
+---
+title: "D-4201 — recebimento"
+sidebarTitle: "Recebimento"
+description: "POST do JSON D-4201, cabeçalhos, idempotência, volume e retentativa."
+---
+
+Defina a URL base do GSF no ambiente da integração. O path público é:
+
+```http
+POST /api/v1/dere/d4201/recebimentos/
+Authorization: JWT <TOKEN_DO_GSF>
+Content-Type: application/json; charset=utf-8
+Accept: application/json
+Idempotency-Key: ERP_APOSTAS_LOTE_000001
+```
+
+Alias legado, quando publicado pela mesma aplicação: `/api-boss/v1/dere/d4201/recebimentos/`.
+
+## Idempotency-Key
+
+O cabeçalho é obrigatório. Ele identifica uma requisição imutável.
+
+| Regra | Detalhe |
+| --- | --- |
+| Tamanho | 1 a 100 caracteres |
+| Caracteres | `A-Z`, `a-z`, dígitos e `._:~+/=-` |
+| Escopo | Empresa + ambiente + origem |
+| Conteúdo | A chave não é o corpo. Não use CPF, senha, token nem conteúdo fiscal. |
+
+| Situação | Resultado |
+| --- | --- |
+| Mesma chave, mesmo escopo e mesmo conteúdo canônico | HTTP `200`, mesmo `id_recebimento`, `replay: true` |
+| Mesma chave e conteúdo diferente | HTTP `409` |
+| Novo envio aceito | HTTP `201`, `replay: false`, status `RECEBIDO` |
+
+Dados já aceitos não são sobrescritos com uma chave nova. Não há `PATCH` nem `DELETE` do staging nesta API.
+
+## Enquadramento do corpo
+
+O servidor precisa de comprimento ou delimitação confiável. Use um cliente que envie `Content-Length`, como o cURL com `--data-binary`. Streams delimitados suportados pelo servidor também são aceitos. Sem enquadramento seguro, a resposta pode ser HTTP `411`.
+
+## Volume
+
+| Limite | Valor |
+| --- | --- |
+| Grupos por POST | 1 a 100 |
+| Operações por grupo | 1 a 999 |
+| Operações somadas no POST | até 1.000 |
+| Corpo JSON UTF-8 | 8 MiB |
+| Profundidade do parser | 24 |
+| Itens por coleção | 1.000 |
+| Nós no documento | 100.000 |
+
+Divida a massa em requisições de grupos completos, com identificadores estáveis. Não fragmente o mesmo grupo para acrescentar operações depois do aceite. JSON malformado, UTF-8 inválido, chaves duplicadas e estruturas fora desses limites são rejeitados.
+
+A requisição é atômica: uma falha de validação ou gravação não deve deixar só parte dos grupos gravada.
+
+## Timeout e retentativa
+
+Depois de timeout, repita o **mesmo** conteúdo com a **mesma** chave, ou consulte o protocolo se já o tiver. Não gere outra chave supondo que nada foi recebido.
+
+Em falha temporária ou ocupação de contexto (`409` / `503`), use retry limitado com espera progressiva, preservando conteúdo e chave. Confira o `code` do corpo antes de repetir.
+
+<Note>
+`RECEBIDO` significa armazenamento local. O POST não devolve XML, recibo oficial nem aprovação fiscal.
+</Note>
+
+## Exemplo de chamada
+
+Os nomes `GSF_BASE_URL` e `GSF_JWT_TOKEN` são variáveis do ambiente seguro da integração.
+
+```bash
+curl --fail-with-body \
+  -X POST "${GSF_BASE_URL}/api/v1/dere/d4201/recebimentos/" \
+  -H "Authorization: JWT ${GSF_JWT_TOKEN}" \
+  -H "Content-Type: application/json; charset=utf-8" \
+  -H "Accept: application/json" \
+  -H "Idempotency-Key: ERP_APOSTAS_LOTE_000001" \
+  --data-binary @examples/d4201-original-virtual.json
+```
+
+O arquivo é sintético. Para o envio efetivo, substitua empresa, documentos, chave e operações pelos dados da origem.
+
+<CardGroup cols={2}>
+  <Card title="Campos" icon="list" href="/d4201/campos">
+    O que a raiz, o grupo e a operação aceitam.
+  </Card>
+  <Card title="Exemplo ORIGINAL" icon="code" href="/d4201/exemplos">
+    JSON sintético de referência.
+  </Card>
+</CardGroup>

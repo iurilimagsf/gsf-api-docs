@@ -1,0 +1,63 @@
+---
+title: "D-4201 — finalidades"
+sidebarTitle: "Finalidades"
+description: "ORIGINAL, DEVOLUCAO e CANCELAMENTO no recebimento D-4201."
+---
+
+`finalidade` vai na raiz, em maiúsculas. Não envie `finEvt` no corpo de negócio: o servidor o produz depois, no payload técnico.
+
+| `finalidade` | Referências no JSON | `finEvt` posterior |
+| --- | --- | --- |
+| `ORIGINAL` | Nenhuma. Omita `chave_referencia` e `sequencia_referencia`. | `11` |
+| `DEVOLUCAO` | `chave_referencia` no grupo e `sequencia_referencia` em cada operação. | `31` |
+| `CANCELAMENTO` | As mesmas referências da devolução. | `41` |
+
+## Conferência da referência
+
+Para devolução e cancelamento, o banco exige referência na mesma empresa e no mesmo ambiente, vinculada a um D-4201 original oficialmente **APROVADO**, com recibo real e sequência existente.
+
+| Situação | Resultado |
+| --- | --- |
+| Chave com 53 caracteres sem histórico aprovado | Rejeitada |
+| Recibo simulado com prefixo `HOM-` ou `SIM-` | Não satisfaz a conferência |
+| Sequência inexistente no original aprovado | Rejeitada |
+| Código `REFERENCE_NOT_OFFICIALLY_APPROVED` | Falha de referência fiscal, não de permissão de menu |
+
+Os exemplos de devolução e cancelamento desta documentação são estruturais. Eles não demonstram recepção homologada e não passam pela conferência sem um original real aprovado no banco. Não crie status nem recibo artificial para contornar a validação.
+
+## Devolução (estrutura)
+
+```json
+{
+  "versao": 1,
+  "empresa_id": 10,
+  "origem": "ERP_APOSTAS_SINT",
+  "competencia": "2026-11",
+  "finalidade": "DEVOLUCAO",
+  "grupos": [
+    {
+      "id_origem": "G-SINT-DEV-001",
+      "chave_dere": "12345678901BBBBBBBBBBBBBBBBBBBBBBBB202611050500000002",
+      "chave_referencia": "12345678901AAAAAAAAAAAAAAAAAAAAAAAA202611050500000001",
+      "presencial": false,
+      "apostador": {
+        "cpf": "52998224725",
+        "municipio": "3550308"
+      },
+      "operacoes": [
+        {
+          "data_hora": "2026-11-05T18:00:00.000+00:00",
+          "valor": "100.00",
+          "sequencia_referencia": "001"
+        }
+      ]
+    }
+  ]
+}
+```
+
+`CANCELAMENTO` usa a mesma forma, com `"finalidade": "CANCELAMENTO"`.
+
+<Card title="Respostas e erros" icon="code" href="/d4201/respostas">
+Como ler o aceite e a lista `issues`.
+</Card>

@@ -1,0 +1,65 @@
+---
+title: "D-4201 — autenticação"
+sidebarTitle: "Autenticação"
+description: "Como obter o JWT do GSF para o recebimento D-4201."
+---
+
+O recebimento exige um JWT emitido pelo GSF. A rota principal é a mesma das demais APIs.
+
+```http
+POST /api/v1/auth/token/
+Content-Type: application/json
+```
+
+| Campo | Tipo | Obrigatório | Descrição |
+| --- | --- | --- | --- |
+| `username` | string | Sim | Usuário da conta de integração |
+| `password` | string | Sim | Senha obtida do gerenciador de segredos |
+
+```json
+{
+  "username": "USUARIO_DE_INTEGRACAO",
+  "password": "SENHA_OBTIDA_DO_GERENCIADOR_DE_SEGREDOS"
+}
+```
+
+Leia `token` na resposta `200` e envie:
+
+```http
+Authorization: JWT <TOKEN_DO_GSF>
+```
+
+<Warning>
+O prefixo é `JWT`, com espaço. Não use `Bearer`. O token da Receita/Integra, usado na mensageria, é outro token e não autentica este endpoint.
+</Warning>
+
+## Validade e renovação
+
+No `hom_settings.py` conferido, a expiração está em **1 dia**, com verificação ativa. A instalação pode ter outro valor.
+
+| Item | Comportamento conferido |
+| --- | --- |
+| Emissão | `POST /api/v1/auth/token/` |
+| Alias | `POST /api-boss/v1/auth/token/` |
+| Rota legada | `POST /api/api-token-auth/` |
+| Refresh | `JWT_ALLOW_REFRESH` desabilitado. Não há rota de refresh publicada. |
+| Após expirar | Novo login na rota existente. Não invente `/refresh/`. |
+
+Ao receber `401`, obtenha outro token e repita o recebimento com o **mesmo** conteúdo e a **mesma** `Idempotency-Key`.
+
+## MFA
+
+O MFA/TOTP do login web não acrescenta `totp_code` à emissão JWT deste checkout. Não presuma que a política MFA da sessão web valha para a API e não desative o MFA para contornar a autenticação. Se a política de segurança exigir MFA também na emissão de tokens da integração, isso é revisão do administrador. Esta documentação não altera a autenticação.
+
+## Cuidados
+
+- Use HTTPS e gerenciador de segredos.
+- Não versione credenciais nem JWT.
+- Não coloque o token na query string.
+- Não registre o corpo de login em logs.
+
+O fluxo geral do token está em [Autenticação](/autenticacao).
+
+<Card title="Recebimento do JSON" icon="paper-plane" href="/d4201/recebimento">
+Cabeçalhos, idempotência e limites do POST.
+</Card>

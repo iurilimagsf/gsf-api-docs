@@ -1,0 +1,537 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "GSF Soluções — D-4201",
+    "version": "1.0.0",
+    "description": "Recebimento do JSON de apostas D-4201.\n\nContrato conferido em 06/11/2026 no checkout homologacaoNovoTemplate, commit 348dd2ec9447f5fb9755c8aba29c61ab8e766593.\n\nA base é a instalação GSF da integração. O servidor abaixo é a homologação usada no restante desta documentação quando o contrato estiver publicado nesse host.\n\nPrefixo de autorização: `JWT` (não Bearer)."
+  },
+  "servers": [
+    {
+      "url": "https://hom.portalgsf.com.br",
+      "description": "Homologação GSF, quando o contrato D-4201 estiver publicado neste host"
+    }
+  ],
+  "tags": [
+    {
+      "name": "D4201",
+      "description": "Recebimento e consulta do JSON D-4201."
+    }
+  ],
+  "paths": {
+    "/api/v1/dere/d4201/recebimentos/": {
+      "post": {
+        "tags": ["D4201"],
+        "summary": "Receber lote D-4201",
+        "description": "Grava o staging local. HTTP 201 no aceite novo e HTTP 200 no replay da mesma Idempotency-Key com o mesmo conteúdo canônico. Não devolve XML, recibo oficial nem aprovação fiscal.",
+        "operationId": "receberD4201",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "description": "1 a 100 caracteres de A-Z, a-z, dígitos e ._:~+/=-. Escopo: empresa, ambiente e origem.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "pattern": "^[A-Za-z0-9._:~+/=-]{1,100}$"
+            },
+            "example": "ERP_APOSTAS_LOTE_000001"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/D4201Recebimento"
+              },
+              "example": {
+                "versao": 1,
+                "empresa_id": 10,
+                "origem": "ERP_APOSTAS_SINT",
+                "competencia": "2026-11",
+                "finalidade": "ORIGINAL",
+                "grupos": [
+                  {
+                    "id_origem": "G-SINT-ORIG-001",
+                    "chave_dere": "12345678901AAAAAAAAAAAAAAAAAAAAAAAA202611050500000001",
+                    "presencial": false,
+                    "apostador": {
+                      "cpf": "52998224725",
+                      "municipio": "3550308"
+                    },
+                    "operacoes": [
+                      {
+                        "data_hora": "2026-11-05T12:00:00.000+00:00",
+                        "valor": "100.00"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Recebimento novo armazenado com status RECEBIDO",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/D4201Aceite"
+                },
+                "example": {
+                  "success": true,
+                  "id_recebimento": 123,
+                  "status": "RECEBIDO",
+                  "replay": false,
+                  "qtd_grupos": 1,
+                  "qtd_operacoes": 1,
+                  "ambiente": "2",
+                  "leiaute": "evtIdApostPrem-v0_0_1.xsd",
+                  "preliminar": true,
+                  "versao_tela": 1
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Replay idempotente do mesmo conteúdo canônico",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/D4201Aceite"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "JSON, UTF-8, estrutura ou chaves duplicadas inválidas"
+          },
+          "401": {
+            "description": "JWT ausente, inválido ou expirado. A autenticação DRF pode responder antes do envelope D-4201."
+          },
+          "403": {
+            "description": "Usuário inativo ou empresa não autorizada (COMPANY_FORBIDDEN)"
+          },
+          "404": {
+            "description": "Empresa ou recurso inexistente no escopo autorizado"
+          },
+          "409": {
+            "description": "Conflito de idempotência, origem, chave, concorrência ou contexto ocupado"
+          },
+          "411": {
+            "description": "Corpo sem comprimento ou delimitação confiável"
+          },
+          "413": {
+            "description": "Corpo acima de 8 MiB"
+          },
+          "422": {
+            "description": "Campo, documento, chave, data, referência ou quantidade incompatível",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/D4201Erro"
+                },
+                "example": {
+                  "success": false,
+                  "code": "INVALID_REQUEST",
+                  "message": "Requisição D-4201 inválida; nada foi persistido.",
+                  "issues": [
+                    {
+                      "code": "INVALID_FIELD",
+                      "path": "/grupos[1]/operacoes[1]/valor",
+                      "message": "Valor deve ser string decimal; float não é aceito."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Configuração DeRE ausente ou inativa (COMPANY_CONFIG_MISSING), ou armazenamento indisponível"
+          }
+        }
+      }
+    },
+    "/api/v1/dere/d4201/recebimentos/{id}/": {
+      "get": {
+        "tags": ["D4201"],
+        "summary": "Consultar recebimento D-4201",
+        "description": "Consulta autorizada do protocolo local. Selecione a mesma empresa do envio.",
+        "operationId": "consultarRecebimentoD4201",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "id_recebimento devolvido no aceite.",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 123
+          },
+          {
+            "name": "empresa_id",
+            "in": "query",
+            "required": true,
+            "description": "ID interno da empresa autorizada para o usuário do JWT.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "example": 10
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recebimento encontrado no escopo autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT ausente, inválido ou expirado"
+          },
+          "403": {
+            "description": "Empresa não autorizada para o usuário"
+          },
+          "404": {
+            "description": "Recebimento inexistente no escopo autorizado"
+          }
+        }
+      }
+    },
+    "/api/v1/dere/d4201/grupos/": {
+      "get": {
+        "tags": ["D4201"],
+        "summary": "Consultar grupos do recebimento D-4201",
+        "description": "Lista grupos do protocolo informado, no escopo da empresa autorizada.",
+        "operationId": "consultarGruposD4201",
+        "parameters": [
+          {
+            "name": "empresa_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "example": 10
+          },
+          {
+            "name": "id_recebimento",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "example": 123
+          },
+          {
+            "name": "limite",
+            "in": "query",
+            "required": false,
+            "description": "Tamanho da página. O exemplo documentado usa 50.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "example": 50
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Grupos do recebimento no escopo autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT ausente, inválido ou expirado"
+          },
+          "403": {
+            "description": "Empresa não autorizada para o usuário"
+          },
+          "404": {
+            "description": "Recebimento inexistente no escopo autorizado"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "jwtAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "JWT <token> (prefixo JWT, não Bearer)."
+      }
+    },
+    "schemas": {
+      "D4201Recebimento": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["versao", "empresa_id", "origem", "competencia", "finalidade", "grupos"],
+        "properties": {
+          "versao": {
+            "type": "integer",
+            "enum": [1]
+          },
+          "empresa_id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "ID interno da empresa autorizada. Não é o CNPJ."
+          },
+          "origem": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 30,
+            "pattern": "^[A-Za-z0-9._:-]{1,30}$"
+          },
+          "competencia": {
+            "type": "string",
+            "pattern": "^20[0-9]{2}-(0[1-9]|1[0-2])$",
+            "example": "2026-11"
+          },
+          "finalidade": {
+            "type": "string",
+            "enum": ["ORIGINAL", "DEVOLUCAO", "CANCELAMENTO"]
+          },
+          "grupos": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/D4201Grupo"
+            }
+          }
+        }
+      },
+      "D4201Grupo": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id_origem", "chave_dere", "presencial", "operacoes"],
+        "properties": {
+          "id_origem": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "chave_dere": {
+            "type": "string",
+            "minLength": 53,
+            "maxLength": 53
+          },
+          "chave_referencia": {
+            "type": "string",
+            "minLength": 53,
+            "maxLength": 53,
+            "description": "Obrigatória em DEVOLUCAO e CANCELAMENTO. Omitir em ORIGINAL."
+          },
+          "presencial": {
+            "type": "boolean"
+          },
+          "apostador": {
+            "$ref": "#/components/schemas/D4201Apostador"
+          },
+          "ponto_venda": {
+            "$ref": "#/components/schemas/D4201PontoVenda"
+          },
+          "municipio": {
+            "type": "string",
+            "pattern": "^[0-9]{7}$",
+            "description": "Somente presencial, como local comum do grupo."
+          },
+          "operacoes": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 999,
+            "items": {
+              "$ref": "#/components/schemas/D4201Operacao"
+            }
+          }
+        }
+      },
+      "D4201Apostador": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "cpf": {
+            "type": "string",
+            "pattern": "^[0-9]{11}$"
+          },
+          "cnpj": {
+            "type": "string",
+            "minLength": 14,
+            "maxLength": 14
+          },
+          "municipio": {
+            "type": "string",
+            "pattern": "^[0-9]{7}$"
+          },
+          "exterior": {
+            "$ref": "#/components/schemas/D4201Exterior"
+          }
+        }
+      },
+      "D4201Exterior": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["pais"],
+        "properties": {
+          "nif": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20
+          },
+          "motivo_sem_nif": {
+            "type": "string",
+            "enum": ["1", "2"]
+          },
+          "documento": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20
+          },
+          "pais": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$"
+          }
+        }
+      },
+      "D4201PontoVenda": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "A borda REST aceita apenas cpf ou cnpj. Não envie municipio neste objeto.",
+        "properties": {
+          "cpf": {
+            "type": "string",
+            "pattern": "^[0-9]{11}$"
+          },
+          "cnpj": {
+            "type": "string",
+            "minLength": 14,
+            "maxLength": 14
+          }
+        }
+      },
+      "D4201Operacao": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data_hora", "valor"],
+        "properties": {
+          "data_hora": {
+            "type": "string",
+            "description": "ISO-8601 com fuso. O sufixo Z é aceito.",
+            "example": "2026-11-05T12:00:00.000+00:00"
+          },
+          "valor": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]{0,14})\\.[0-9]{2}$",
+            "example": "100.00"
+          },
+          "municipio": {
+            "type": "string",
+            "pattern": "^[0-9]{7}$"
+          },
+          "sequencia_referencia": {
+            "type": "string",
+            "pattern": "^[0-9]{3}$",
+            "description": "001 a 999. Obrigatória em DEVOLUCAO e CANCELAMENTO."
+          }
+        }
+      },
+      "D4201Aceite": {
+        "type": "object",
+        "required": ["success", "id_recebimento", "status", "replay"],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "id_recebimento": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string",
+            "example": "RECEBIDO"
+          },
+          "replay": {
+            "type": "boolean"
+          },
+          "qtd_grupos": {
+            "type": "integer"
+          },
+          "qtd_operacoes": {
+            "type": "integer"
+          },
+          "ambiente": {
+            "type": "string"
+          },
+          "leiaute": {
+            "type": "string"
+          },
+          "preliminar": {
+            "type": "boolean"
+          },
+          "versao_tela": {
+            "type": "integer"
+          }
+        }
+      },
+      "D4201Erro": {
+        "type": "object",
+        "required": ["success", "code", "message"],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "issues": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "object",
+              "required": ["code", "path", "message"],
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "path": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "jwtAuth": []
+    }
+  ]
+}

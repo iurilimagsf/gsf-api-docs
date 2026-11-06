@@ -27,7 +27,7 @@ Bem-vindo à documentação técnica da **API GSF Soluções**. Aqui você encon
 </CardGroup>
 
 <Tip>
-A documentação da **Integração SAP** está na aba **Apis** → [Integração SAP](/integracao-sap).
+Na aba **Apis** também estão a [Integração SAP](/integracao-sap) e o [recebimento D-4201](/d4201).
 </Tip>
 
 ## Base e autenticação
@@ -61,6 +61,9 @@ O header de autenticação usa o prefixo **`JWT`**, não `Bearer`.
 | `POST` | `/api/v1/nota64/` | Obter PDF da nota em Base64 |
 | `POST` | `/api/v1/downloads-agendados/` | Iniciar download em lote (ZIP) |
 | `GET` | `/api/v1/downloads-agendados/{protocolo}/` | Consultar e baixar o ZIP |
+| `POST` | `/api/v1/dere/d4201/recebimentos/` | Receber JSON D-4201 |
+| `GET` | `/api/v1/dere/d4201/recebimentos/{id}/` | Consultar protocolo D-4201 |
+| `GET` | `/api/v1/dere/d4201/grupos/` | Consultar grupos do D-4201 |
 
 ## Fluxo recomendado
 

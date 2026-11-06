@@ -1,0 +1,73 @@
+---
+title: "D-4201 — campos"
+sidebarTitle: "Campos"
+description: "Campos aceitos na raiz, no grupo e em cada operação do JSON D-4201."
+---
+
+Os únicos campos aceitos na raiz são os seis abaixo. Campo desconhecido e chave JSON duplicada são rejeitados.
+
+Não envie `ambiente` na raiz. Ele vem da configuração DeRE da empresa e não é escolhido pelo remetente.
+
+## Objeto principal
+
+| Atributo | Tipo | Obrig. | Instrução |
+| --- | --- | --- | --- |
+| `versao` | inteiro JSON | Sim | Envie `1`, sem aspas. `true`, `1.0` e `"1"` são inválidos. |
+| `empresa_id` | inteiro JSON positivo | Sim | ID interno da empresa autorizada para o usuário do JWT. Envie `10`, não `"10"`. Não é o CNPJ. |
+| `origem` | texto | Sim | 1 a 30 caracteres: letras, números e `._:-`. Ex.: `ERP_APOSTAS`. Sem espaço, acento ou barra. |
+| `competencia` | texto | Sim | `AAAA-MM`. O normalizador vigente aceita anos 2000–2099 e meses `01`–`12`. |
+| `finalidade` | texto | Sim | `ORIGINAL`, `DEVOLUCAO` ou `CANCELAMENTO`, em maiúsculas. O servidor converte para a finalidade técnica do XML. |
+| `grupos` | lista | Sim | 1 a 100 objetos. Todos pertencem à empresa, competência e finalidade daquele envio. |
+
+## Grupo (`grupos[]`)
+
+Cada objeto aceita somente: `id_origem`, `chave_dere`, `chave_referencia`, `presencial`, `apostador`, `ponto_venda`, `municipio` e `operacoes`.
+
+| Atributo | Tipo | Obrig. | Instrução |
+| --- | --- | --- | --- |
+| `id_origem` | texto | Sim | Até 200 caracteres, estável na origem, não vazio. Espaços externos são removidos. Não repita no mesmo envio. |
+| `chave_dere` | texto | Sim | Chave fiscal `chDeRE`, 53 posições, estrutura do leiaute. A origem deve fornecê-la. Não substitua por `id_origem`, protocolo, `Idempotency-Key` ou ID do XML. |
+| `chave_referencia` | texto | Condicional | Omitir em `ORIGINAL`. Obrigatória em `DEVOLUCAO` e `CANCELAMENTO`: 53 posições do original oficialmente aprovado. |
+| `presencial` | booleano JSON | Sim | `true` ou `false`, sem aspas. `1`, `0`, `"S"` e `"N"` são inválidos. |
+| `apostador` | objeto | Condicional | Obrigatório na operação virtual. Ver [Apostador e PDV](/d4201/apostador). |
+| `ponto_venda` | objeto | Condicional | Somente presencial sem apostador identificado. Exige exatamente `cpf` ou `cnpj`. |
+| `municipio` | texto | Condicional | 7 dígitos. Somente presencial, como local comum das operações do grupo. |
+| `operacoes` | lista | Sim | 1 a 999 objetos, em ordem cronológica. O servidor não reordena. |
+
+Os grupos do mesmo envio devem ter `id_origem` e `chave_dere` distintos.
+
+Quando não houver apostador, omita o campo. Não envie `"apostador": null`. Não combine `apostador` e `ponto_venda`.
+
+Em operação virtual, não envie `ponto_venda`, `grupos[].municipio` nem `operacoes[].municipio`.
+
+## Operação (`operacoes[]`)
+
+Os únicos campos aceitos são os quatro abaixo.
+
+| Atributo | Tipo | Obrig. | Instrução |
+| --- | --- | --- | --- |
+| `data_hora` | texto | Sim | ISO-8601 com fuso. Ex.: `2026-11-05T12:00:00.000+00:00`. O sufixo `Z` é aceito. Sem offset é inválido. |
+| `valor` | string decimal | Sim | Não negativa, ponto e exatamente duas casas. Ex.: `"100.00"`. Até 15 dígitos inteiros, sem zeros extras à esquerda. `"0.00"` é válido. |
+| `municipio` | texto | Condicional | 7 dígitos. Local da aposta. Obrigatório em presencial se o grupo não trouxer município comum. Proibido em virtual. |
+| `sequencia_referencia` | texto | Condicional | Três dígitos `001`–`999`. Omitir em `ORIGINAL`. Obrigatória em `DEVOLUCAO` e `CANCELAMENTO` e deve existir no original aprovado. |
+
+Inválidos para `valor`: número JSON `100.00`, `"100,00"`, `"-1.00"`, `"001.00"` e notação científica.
+
+A data/hora é convertida para UTC com milissegundos, e a competência é conferida depois dessa conversão. Um offset pode mudar o mês UTC: a origem deve resolver isso antes do envio. Entrada sem fração de segundos é aceita e normalizada para `.000`. Precisão submilissegundo é rejeitada.
+
+A sequência nova das operações é atribuída pelo servidor conforme a ordem do array (`001`, `002`, ...). Não envie essa sequência como campo. Ela não se confunde com `sequencia_referencia`, que aponta a operação do evento anterior.
+
+## O que não enviar
+
+Não envie XML, assinatura, namespace, `ambiente` / `tpAmb`, inscrição do emissor, `aplicEmi`, `verAplic`, `codBC`, `status`, `lote`, `id_evento`, `recibo`, `fila`, `finEvt` nem comandos de worker ou transmissão.
+
+O GSF fornece os metadados técnicos. O endpoint rejeita campos desconhecidos, inclusive tentativa de transportar informação de XML em campo adicional.
+
+<CardGroup cols={2}>
+  <Card title="Apostador e PDV" icon="user" href="/d4201/apostador">
+    Nacional, exterior e ponto de venda.
+  </Card>
+  <Card title="Finalidades" icon="code-branch" href="/d4201/finalidades">
+    ORIGINAL, devolução e cancelamento.
+  </Card>
+</CardGroup>

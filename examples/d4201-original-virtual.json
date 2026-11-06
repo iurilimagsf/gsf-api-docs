@@ -1,0 +1,24 @@
+{
+  "versao": 1,
+  "empresa_id": 10,
+  "origem": "ERP_APOSTAS_SINT",
+  "competencia": "2026-11",
+  "finalidade": "ORIGINAL",
+  "grupos": [
+    {
+      "id_origem": "G-SINT-ORIG-001",
+      "chave_dere": "12345678901AAAAAAAAAAAAAAAAAAAAAAAA202611050500000001",
+      "presencial": false,
+      "apostador": {
+        "cpf": "52998224725",
+        "municipio": "3550308"
+      },
+      "operacoes": [
+        {
+          "data_hora": "2026-11-05T12:00:00.000+00:00",
+          "valor": "100.00"
+        }
+      ]
+    }
+  ]
+}

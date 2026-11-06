@@ -1,0 +1,87 @@
+---
+title: "D-4201 — respostas"
+sidebarTitle: "Respostas"
+description: "Envelope de aceite, replay e erros do recebimento D-4201."
+---
+
+Recebimento novo retorna HTTP `201`. Replay da mesma chave e do mesmo conteúdo canônico retorna HTTP `200`, o mesmo `id_recebimento` e `replay: true`. Os IDs são atribuídos pelo servidor.
+
+## Aceite
+
+```json
+{
+  "success": true,
+  "id_recebimento": 123,
+  "status": "RECEBIDO",
+  "replay": false,
+  "qtd_grupos": 1,
+  "qtd_operacoes": 1,
+  "ambiente": "2",
+  "leiaute": "evtIdApostPrem-v0_0_1.xsd",
+  "preliminar": true,
+  "versao_tela": 1
+}
+```
+
+| Campo | Significado |
+| --- | --- |
+| `success` | `true` no aceite |
+| `id_recebimento` | Protocolo local. Use-o na consulta. |
+| `status` | `RECEBIDO`: armazenamento local, sem aprovação fiscal |
+| `replay` | `false` no primeiro aceite; `true` na repetição idempotente |
+| `qtd_grupos` / `qtd_operacoes` | Quantidades aceitas na requisição |
+| `ambiente` | Valor vindo da configuração DeRE. O exemplo ilustra `"2"`. |
+| `leiaute` | Leiaute preliminar associado ao recebimento |
+| `preliminar` | `true` enquanto o leiaute `v0_0_1` for preliminar |
+| `versao_tela` | Versão de tela do fluxo. O exemplo ilustra `1`. |
+
+## Erro da borda D-4201
+
+```json
+{
+  "success": false,
+  "code": "INVALID_REQUEST",
+  "message": "Requisição D-4201 inválida; nada foi persistido.",
+  "issues": [
+    {
+      "code": "INVALID_FIELD",
+      "path": "/grupos[1]/operacoes[1]/valor",
+      "message": "Valor deve ser string decimal; float não é aceito."
+    }
+  ]
+}
+```
+
+`issues` pode ser omitido. A resposta HTTP expõe até 20 críticas, apesar de o limite interno ser 100. Os índices dos caminhos começam em 1. A notação não é um JSON Pointer estrito.
+
+A autenticação do DRF pode responder antes da guarda de negócio. Nem todo HTTP `401` usa este envelope.
+
+## Códigos HTTP
+
+| HTTP | Quando ocorre |
+| --- | --- |
+| `400` | JSON, UTF-8, estrutura ou chaves duplicadas inválidas |
+| `401` | JWT ausente, inválido ou expirado |
+| `403` | Usuário inativo ou empresa não autorizada |
+| `404` | Empresa ou recurso inexistente no escopo autorizado |
+| `409` | Conflito de idempotência, origem, chave, concorrência ou contexto ocupado |
+| `411` | Corpo sem comprimento ou delimitação confiável |
+| `413` | Corpo acima do teto |
+| `422` | Versão, campo, documento, chave, data, referência ou quantidade incompatível |
+| `503` | Configuração DeRE ausente ou inativa, ou armazenamento/aplicação indisponível |
+
+## Códigos de negócio relevantes para acesso
+
+| `code` | Leitura |
+| --- | --- |
+| `COMPANY_FORBIDDEN` | Vínculo empresarial insuficiente |
+| `COMPANY_CONFIG_MISSING` | Configuração DeRE ausente ou inativa |
+| `REFERENCE_NOT_OFFICIALLY_APPROVED` | Referência fiscal sem original aprovado. Não é permissão de menu. |
+| `INVALID_REQUEST` | A borda rejeitou a requisição e nada foi persistido |
+| `INVALID_FIELD` | Campo incompatível com o contrato. Leia `path`. |
+
+Em `409`, confira `code` antes de repetir. Em `401`, troque o token e mantenha a chave de idempotência.
+
+<Card title="Consulta e tela" icon="magnifying-glass" href="/d4201/consulta">
+Como acompanhar o protocolo depois do aceite.
+</Card>

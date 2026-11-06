@@ -2,7 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "GSF Soluções API",
-  "description": "Especificações técnicas da API GSF Soluções para NFS-e, NF-e, SEFAZ e DC-e.",
+  "description": "Especificações técnicas da API GSF Soluções para NFS-e, NF-e, SEFAZ, DC-e e D-4201.",
   "colors": {
     "primary": "#91BA2E",
     "light": "#91BA2E",
@@ -177,6 +177,25 @@
             ]
           },
           {
+            "group": "D-4201",
+            "pages": [
+              {
+                "group": "Recebimento",
+                "pages": [
+                  "d4201/index",
+                  "d4201/autenticacao",
+                  "d4201/recebimento",
+                  "d4201/campos",
+                  "d4201/apostador",
+                  "d4201/finalidades",
+                  "d4201/exemplos",
+                  "d4201/respostas",
+                  "d4201/consulta"
+                ]
+              }
+            ]
+          },
+          {
             "group": "Integração SAP",
             "pages": [
               {
@@ -211,6 +230,14 @@
                 "group": "Integração SAP",
                 "pages": [
                   "referencia/sap-enviar"
+                ]
+              },
+              {
+                "group": "D-4201",
+                "pages": [
+                  "referencia/d4201-recebimento",
+                  "referencia/d4201-consulta-recebimento",
+                  "referencia/d4201-consulta-grupos"
                 ]
               }
             ]

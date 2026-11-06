@@ -1,0 +1,100 @@
+---
+title: "D-4201 — apostador e ponto de venda"
+sidebarTitle: "Apostador e PDV"
+description: "Ramos de apostador nacional, exterior e ponto de venda presencial no D-4201."
+---
+
+`apostador` é obrigatório na operação virtual. No presencial, se o apostador for omitido, envie `ponto_venda`. Não combine os dois. Quando não houver apostador, omita o campo: não envie `"apostador": null`.
+
+## Apostador nacional
+
+Envie exatamente CPF ou CNPJ, com o município residencial do apostador.
+
+```json
+{
+  "apostador": {
+    "cpf": "52998224725",
+    "municipio": "3550308"
+  }
+}
+```
+
+| Atributo | Instrução |
+| --- | --- |
+| `cpf` | Texto. Validação local de 11 dígitos, sem máscara. |
+| `cnpj` | Texto de 14 posições, inclusive a modalidade alfanumérica validada pelo GSF. Sem máscara e, se alfanumérico, em maiúsculas. |
+| `municipio` | Texto com 7 dígitos no formato IBGE. |
+
+O limite bruto do identificador de apostador é 14. CNPJ pontuado pode excedê-lo. Não combine CPF/CNPJ com identidade do exterior.
+
+A validação local do município confere o formato. Ela não comprova existência do código no cadastro IBGE. O município residencial não determina o local de uma operação presencial.
+
+## Apostador do exterior
+
+Com NIF:
+
+```json
+{
+  "apostador": {
+    "exterior": {
+      "nif": "ABC123",
+      "pais": "PT"
+    }
+  }
+}
+```
+
+Sem NIF:
+
+```json
+{
+  "apostador": {
+    "exterior": {
+      "motivo_sem_nif": "1",
+      "documento": "PASSAPORTE123",
+      "pais": "PT"
+    }
+  }
+}
+```
+
+| Atributo | Instrução |
+| --- | --- |
+| `nif` | Alfanumérico, 1 a 20 caracteres, sem máscara. Não envie `documento` nem `motivo_sem_nif` junto com NIF. |
+| `motivo_sem_nif` | Texto `"1"` ou `"2"`, correspondente ao motivo oficial aplicável. |
+| `documento` | Alfanumérico, 1 a 20 caracteres. Usado no ramo sem NIF. |
+| `pais` | Obrigatório nos dois ramos. Duas letras, em maiúsculas. |
+
+Não combine `exterior` com CPF/CNPJ e não envie município residencial nacional nesse ramo. A validação local do país confere duas letras. Ela não consulta existência ou admissibilidade oficial do país.
+
+## Presencial sem apostador
+
+Omita `apostador`, envie `presencial: true` e um `ponto_venda` com exatamente um documento válido, `cpf` ou `cnpj`. O município fica no grupo ou em cada operação.
+
+```json
+{
+  "id_origem": "G-SINT-PDV-001",
+  "chave_dere": "12345678901CCCCCCCCCCCCCCCCCCCCCCCC202611050500000003",
+  "presencial": true,
+  "ponto_venda": {
+    "cnpj": "11222333000181"
+  },
+  "operacoes": [
+    {
+      "data_hora": "2026-11-05T15:30:00.000-03:00",
+      "valor": "50.00",
+      "municipio": "3550308"
+    }
+  ]
+}
+```
+
+<Warning>
+Não envie `ponto_venda.municipio` no POST atual. O domínio interno conhece esse campo, mas a borda REST aceita no objeto do PDV apenas `cpf` e `cnpj`. Se o local variar entre operações, informe `municipio` em cada operação.
+</Warning>
+
+Em operação virtual, não envie `ponto_venda`, `grupos[].municipio` nem `operacoes[].municipio`.
+
+<Card title="Exemplo presencial" icon="code" href="/d4201/exemplos">
+JSON sintético completo do PDV.
+</Card>
