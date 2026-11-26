@@ -33,6 +33,10 @@
       "description": "Geração e download em ZIP dos XMLs e PDFs das notas de uma empresa por período."
     },
     {
+      "name": "ConsultaNotas",
+      "description": "Relatório de notas fiscais de um período em planilha Excel (.xlsx) dentro de um JSON em base64."
+    },
+    {
       "name": "IntegracaoSAP",
       "description": "Recebimento de documentos e lançamentos enviados pelo SAP."
     }
@@ -954,6 +958,97 @@
         }
       }
     },
+    "/api/relatorio/notas": {
+      "get": {
+        "tags": [
+          "ConsultaNotas"
+        ],
+        "summary": "Consultar relatório de notas",
+        "description": "Devolve o relatório de notas fiscais do período em uma planilha Excel (.xlsx) codificada em base64 dentro do JSON. Uma linha por item de nota. Limite de 60 requisições por minuto por origem.",
+        "operationId": "consultarRelatorioNotas",
+        "security": [],
+        "parameters": [
+          {
+            "name": "dataInicio",
+            "in": "query",
+            "required": true,
+            "description": "Início do período (data fiscal, inclusivo). Formato YYYY-MM-DD.",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2026-11-01"
+            }
+          },
+          {
+            "name": "dataFim",
+            "in": "query",
+            "required": true,
+            "description": "Fim do período (inclusivo). Formato YYYY-MM-DD.",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2026-11-21"
+            }
+          },
+          {
+            "name": "estabelecimento",
+            "in": "query",
+            "required": false,
+            "description": "Código do estabelecimento no cadastro do GSF.",
+            "schema": {
+              "type": "string",
+              "example": "1"
+            }
+          },
+          {
+            "name": "modelo",
+            "in": "query",
+            "required": false,
+            "description": "Código do modelo do documento fiscal. Mais usados: 55 (NF-e), 57 (CT-e), 97 (NFS-e).",
+            "schema": {
+              "type": "string",
+              "example": "55"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Planilha gerada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelatorioNotasResponse"
+                },
+                "example": {
+                  "fileName": "20261124103015.xlsx",
+                  "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                  "data": "UEsDBBQABgAIAAAAIQ…"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Parâmetro obrigatório ausente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelatorioNotasErro"
+                },
+                "example": {
+                  "erro": "Informe data_inicio e data_fim"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Mais de 60 chamadas por minuto por origem"
+          },
+          "500": {
+            "description": "Data fora do formato YYYY-MM-DD ou falha no processamento"
+          }
+        }
+      }
+    },
     "/api/v1/integrations/sap/s4hana/messages/": {
       "post": {
         "tags": [
@@ -1442,6 +1537,42 @@
         "properties": {
           "mensagem": {
             "type": "string"
+          }
+        }
+      },
+      "RelatorioNotasResponse": {
+        "type": "object",
+        "required": [
+          "fileName",
+          "mimeType",
+          "data"
+        ],
+        "properties": {
+          "fileName": {
+            "type": "string",
+            "description": "Nome sugerido do arquivo, YYYYMMDDHHMMSS.xlsx (hora do servidor).",
+            "example": "20261124103015.xlsx"
+          },
+          "mimeType": {
+            "type": "string",
+            "example": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          },
+          "data": {
+            "type": "string",
+            "description": "Arquivo .xlsx completo, codificado em base64.",
+            "example": "UEsDBBQABgAIAAAAIQ…"
+          }
+        }
+      },
+      "RelatorioNotasErro": {
+        "type": "object",
+        "required": [
+          "erro"
+        ],
+        "properties": {
+          "erro": {
+            "type": "string",
+            "example": "Informe data_inicio e data_fim"
           }
         }
       },

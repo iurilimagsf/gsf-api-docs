@@ -1,0 +1,133 @@
+---
+title: "GET /api/relatorio/notas"
+sidebarTitle: "Consultar"
+description: "Consulta o relatório de notas do período e devolve a planilha Excel em base64."
+---
+
+O período (`dataInicio` e `dataFim`) é obrigatório. Os demais parâmetros são filtros opcionais e podem ser combinados.
+
+## Endpoint
+
+```http
+GET /api/relatorio/notas
+Host: {{baseUrl}}
+```
+
+## Parâmetros (query string)
+
+| Parâmetro | Obrigatório | Formato | Descrição | Exemplo |
+| --- | --- | --- | --- | --- |
+| `dataInicio` | Sim | `YYYY-MM-DD` | Início do período (data fiscal, inclusivo) | `2026-11-01` |
+| `dataFim` | Sim | `YYYY-MM-DD` | Fim do período (inclusivo) | `2026-11-21` |
+| `estabelecimento` | Não | código | Só notas de um estabelecimento (código do cadastro no GSF) | `1` |
+| `modelo` | Não | código do documento | Só um modelo de documento fiscal | `55` |
+
+Modelos mais usados: `55` (NF-e), `57` (CT-e) e `97` (NFS-e). Outros modelos escriturados pela empresa também podem ser informados.
+
+### Regras
+
+- Para um único dia, use a mesma data em `dataInicio` e `dataFim`.
+- Sem filtros opcionais, a resposta traz todas as notas do período, de todos os modelos e estabelecimentos.
+- As datas devem estar exatamente em `YYYY-MM-DD`.
+
+### Exemplos de URL
+
+```http
+GET {{baseUrl}}/api/relatorio/notas?dataInicio=2026-11-01&dataFim=2026-11-21
+GET {{baseUrl}}/api/relatorio/notas?dataInicio=2026-11-01&dataFim=2026-11-21&modelo=55&estabelecimento=1
+```
+
+## Resposta `200`
+
+| Campo | Tipo | Conteúdo |
+| --- | --- | --- |
+| `fileName` | string | Nome sugerido do arquivo, `YYYYMMDDHHMMSS.xlsx` (hora do servidor) |
+| `mimeType` | string | `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` |
+| `data` | string | O arquivo `.xlsx` inteiro, codificado em base64 |
+
+```json
+{
+  "fileName": "20261124103015.xlsx",
+  "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "data": "UEsDBBQABgAIAAAAIQ…(arquivo completo em base64)…AAA="
+}
+```
+
+Decodifique `data` e salve com extensão `.xlsx`. Em shell:
+
+```bash
+curl -s "{{baseUrl}}/api/relatorio/notas?dataInicio=2026-11-01&dataFim=2026-11-21" \
+  | jq -r .data | base64 -d > notas.xlsx
+```
+
+## Erros
+
+| HTTP | Quando | O que fazer |
+| --- | --- | --- |
+| `400` | Falta `dataInicio` ou `dataFim`. Corpo: `{"erro": "Informe data_inicio e data_fim"}` | Enviar os dois parâmetros de data |
+| `429` | Mais de 60 chamadas por minuto | Aguardar um minuto e repetir |
+| `500` | Data fora de `YYYY-MM-DD` ou falha no processamento | Conferir o formato; se persistir, acionar o suporte |
+
+## Exemplos
+
+Substitua `{{baseUrl}}` pela URL base informada pela GSF.
+
+### 1. Período simples (um dia)
+
+```bash
+curl -s "{{baseUrl}}/api/relatorio/notas?dataInicio=2026-11-20&dataFim=2026-11-20"
+```
+
+### 2. Com filtros e salvando a planilha
+
+```bash
+curl -s "{{baseUrl}}/api/relatorio/notas?dataInicio=2026-11-01&dataFim=2026-11-21&modelo=55" \
+  | jq -r .data | base64 -d > notas.xlsx
+```
+
+### 3. PowerShell (Windows)
+
+```powershell
+$r = Invoke-RestMethod "{{baseUrl}}/api/relatorio/notas?dataInicio=2026-11-01&dataFim=2026-11-21&modelo=55"
+[IO.File]::WriteAllBytes("notas.xlsx", [Convert]::FromBase64String($r.data))
+```
+
+### 4. Erro de validação (sem datas → 400)
+
+```bash
+curl -s -i "{{baseUrl}}/api/relatorio/notas"
+```
+
+### 5. Postman
+
+1. Crie um Environment com a variável `baseUrl`.
+2. Nova requisição `GET {{baseUrl}}/api/relatorio/notas` e, em Params: `dataInicio`, `dataFim` e, opcionalmente, `modelo` e `estabelecimento`.
+3. Send → a resposta é o JSON com `fileName`, `mimeType` e `data`.
+4. Para conferir o arquivo: copie `data` e decodifique (base64 → arquivo). O Postman não salva o `.xlsx` sozinho porque ele vem dentro do JSON.
+5. Validação automática na aba Tests:
+
+```javascript
+const r = pm.response.json();
+pm.test("HTTP 200", () => pm.response.to.have.status(200));
+pm.test("tem fileName .xlsx", () => pm.expect(r.fileName).to.match(/\.xlsx$/));
+pm.test("data é base64 de um .xlsx", () => pm.expect(r.data.substring(0, 6)).to.eql("UEsDBB"));
+```
+
+<Info>
+  A coleção Postman `API_Consulta_Notas.postman_collection.json` (entregue junto com a documentação) traz essas chamadas e os testes já configurados — importe e preencha `baseUrl`.
+</Info>
+
+## Boas práticas
+
+| Prática | Detalhe |
+| --- | --- |
+| Período | Até um mês por chamada; sem paginação — para intervalos maiores, divida (por mês ou por modelo) |
+| Filtros | `modelo` e `estabelecimento` reduzem volume e deixam a resposta mais rápida |
+| Timeout | A planilha é gerada na hora; períodos com muitas notas podem levar alguns minutos |
+| Tamanho | O campo `data` é cerca de 33% maior que o `.xlsx` final |
+| Rate limit | 60 chamadas/minuto; em `429`, aguarde e repita |
+| Identificação | Use a coluna `CHAVE DOC` como identificador único; linhas da mesma nota repetem a chave e variam em `NUMERO_ITEM` |
+
+<Tip>
+  Dúvidas ou falhas persistentes: acione o suporte da GSF informando a URL chamada, a data e a hora da requisição.
+</Tip>

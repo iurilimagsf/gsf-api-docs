@@ -1,0 +1,9 @@
+---
+title: "GET /api/relatorio/notas"
+description: "Relatório de notas do período em planilha Excel (.xlsx) dentro do JSON, em base64."
+openapi: "openapi/public.json GET /api/relatorio/notas"
+---
+
+Informe `dataInicio` e `dataFim` na query string. Opcionalmente filtre por `modelo` e `estabelecimento`.
+
+Decodifique o campo `data` da resposta `200` e salve como `.xlsx`. Detalhes em [Consultar](/consulta-notas/consulta) e [Conteúdo da planilha](/consulta-notas/planilha).

@@ -2,7 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "GSF Soluções API",
-  "description": "Especificações técnicas da API GSF Soluções para NFS-e, NF-e, SEFAZ, DC-e e D-4201.",
+  "description": "Especificações técnicas da API GSF Soluções para NFS-e, NF-e, SEFAZ, DC-e, D-4201 e Consulta de Notas.",
   "colors": {
     "primary": "#91BA2E",
     "light": "#91BA2E",
@@ -169,6 +169,14 @@
             ]
           },
           {
+            "group": "Consulta de Notas",
+            "pages": [
+              "consulta-notas/visao-geral",
+              "consulta-notas/consulta",
+              "consulta-notas/planilha"
+            ]
+          },
+          {
             "group": "Downloads Agendados",
             "pages": [
               "downloads-agendados/visao-geral",
@@ -219,6 +227,12 @@
           {
             "group": "API Playground",
             "pages": [
+              {
+                "group": "Consulta de Notas",
+                "pages": [
+                  "referencia/relatorio-notas"
+                ]
+              },
               {
                 "group": "Downloads Agendados",
                 "pages": [

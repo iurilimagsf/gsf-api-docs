@@ -1,0 +1,29 @@
+---
+title: "Conteúdo da planilha"
+sidebarTitle: "Planilha"
+description: "Estrutura das 105 colunas do Excel devolvido pela API de Consulta de Notas."
+---
+
+Uma aba única, **uma linha por item de nota** (uma NF-e de 10 itens ocupa 10 linhas, repetindo os dados da capa), com **105 colunas** em seis grupos.
+
+## Grupos de colunas
+
+| Grupo | Colunas (principais) |
+| --- | --- |
+| Identificação | `CODIGO_EMPRESA`, `ESTABELECIMENTO`, `DATA_EMISSAO`, `FATO_GERADOR`, Tipo de Transação, `SITUAÇÃO`, `MODELO_NF`, `ESPECIE_NF`, `CHAVE DOC`, `NUMERO_NF`, `SERIE_NF`, Valor Total |
+| Partes (NF-e/CT-e, modelos 55/57/67) | CNPJ e razão social de emitente, destinatário e remetente, com UF de cada um; UFs de entrega, retirada e origem; Valor Frete |
+| Partes (NFS-e, demais modelos) | CNPJ e razão social de prestador e tomador, UF e município de cada um |
+| Item | `NUMERO_ITEM`, `CODIGO_PRODUTO`, `DESCRICAO`, `CODIGO_NCM`, CFOP e descrição, natureza da operação, unidade, `QUANTIDADE`, `VLR_ITEM`, `VALOR_CONTABIL`, `CONTA_CONTABIL` |
+| Impostos | ICMS (alíquota, base, valor, CST, CEST), ICMS-ST, partilha DIFAL (destino/remetente), FCP, IPI, PIS, COFINS, ISS (transacional e retido), retenções (PIS/COFINS/CSLL/PCC, INSS, IRRF) — base, alíquota e valor de cada um |
+| Outros | `NUM_AUTENTIC_NFE` (chave), Observações |
+
+## Regras de preenchimento
+
+- Documentos **55 / 57 / 67** preenchem emitente / destinatário / remetente e deixam prestador / tomador vazios.
+- **NFS-e** faz o inverso: preenche prestador / tomador e deixa as colunas de emitente / destinatário / remetente vazias.
+- Valores numéricos vêm como número (ponto decimal).
+- CNPJs, chaves e códigos vêm como **texto**, para não perder zeros à esquerda.
+
+<Note>
+  A coluna `CHAVE DOC` (chave de acesso) identifica o documento. As linhas de uma mesma nota repetem a chave e variam em `NUMERO_ITEM`.
+</Note>

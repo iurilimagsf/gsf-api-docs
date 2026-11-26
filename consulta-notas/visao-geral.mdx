@@ -1,0 +1,69 @@
+---
+title: "Consulta de Notas — visão geral"
+sidebarTitle: "Visão geral"
+description: "Relatório de notas fiscais de um período em planilha Excel (.xlsx) dentro de um JSON em base64."
+---
+
+A API de Consulta de Notas devolve, em uma única chamada REST, o relatório de notas fiscais de um período. A resposta é um JSON com a planilha Excel (`.xlsx`) completa em base64: uma linha por item de nota, com dados da capa, das partes e dos impostos.
+
+| Item | Detalhe |
+| --- | --- |
+| O que consulta | Notas fiscais escrituradas no GSF no período (NF-e, CT-e e NFS-e) |
+| Como consulta | `GET /api/relatorio/notas`, com período e filtros na query string |
+| O que recebe | JSON com nome do arquivo, tipo MIME e a planilha em base64 |
+
+## Endpoint
+
+```http
+GET /api/relatorio/notas
+```
+
+A GSF informa a URL base (`{{baseUrl}}`) de cada ambiente na liberação da integração. O caminho é o mesmo em homologação e produção:
+
+```text
+GET {{baseUrl}}/api/relatorio/notas
+```
+
+## Padrões
+
+| Item | Padrão |
+| --- | --- |
+| Estilo | REST sobre HTTP |
+| Método | `GET` (somente leitura) |
+| Parâmetros | Query string; não há corpo na requisição |
+| Formato de data | `YYYY-MM-DD` (ex.: `2026-11-01`) |
+| Resposta | `application/json`, UTF-8 |
+| Arquivo | Planilha `.xlsx` dentro do JSON, em base64 |
+| Limite de chamadas | 60 requisições por minuto por origem |
+
+## Códigos HTTP
+
+| Código | Significado |
+| --- | --- |
+| `200` | Sucesso — planilha no campo `data` |
+| `400` | Parâmetro obrigatório ausente (`dataInicio` ou `dataFim`) |
+| `429` | Limite de chamadas excedido |
+| `500` | Data fora do formato ou falha no processamento |
+
+## Fluxo recomendado
+
+<Steps>
+  <Step title="Monte a URL">
+    Informe `dataInicio` e `dataFim` (obrigatórios). Opcionalmente filtre por `modelo` e `estabelecimento`.
+  </Step>
+  <Step title="Chame o GET">
+    `GET {{baseUrl}}/api/relatorio/notas?...` — ajuste o timeout; períodos grandes podem levar alguns minutos.
+  </Step>
+  <Step title="Decodifique a planilha">
+    Com `200`, decodifique o campo `data` (base64) e salve como `.xlsx`.
+  </Step>
+</Steps>
+
+<CardGroup cols={2}>
+  <Card title="Consultar relatório" icon="file-excel" href="/consulta-notas/consulta">
+    Parâmetros, resposta, erros e exemplos (curl, PowerShell, Postman).
+  </Card>
+  <Card title="Conteúdo da planilha" icon="table" href="/consulta-notas/planilha">
+    As 105 colunas em seis grupos e regras de preenchimento por modelo.
+  </Card>
+</CardGroup>
